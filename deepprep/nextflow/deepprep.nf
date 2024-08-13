@@ -200,27 +200,34 @@ process anat_segment {
 
     output:
     tuple(val(subject_id), val("${seg_deep_mgz}")) // emit: seg_deep_mgz
+    tuple(val(subject_id), val("${aseg_auto_noccseg_mgz}")) // emit: aseg_auto_noccseg_mgz
+    tuple(val(subject_id), val("${mask_mgz}")) // emit: mask_mgz
 
     script:
     gpu_script_py = "gpu_schedule_run.py"
-    script_py = "${fastsurfer_home}/FastSurferCNN/eval.py"
+    script_py = "${fastsurfer_home}/FastSurferCNN/run_prediction.py"
     gpu_vram = 7750  // VRAM  MB
 
     seg_deep_mgz = "${subjects_dir}/${subject_id}/mri/aparc.DKTatlas+aseg.deep.mgz"
+    aseg_auto_noccseg_mgz = "${subjects_dir}/${subject_id}/mri/aseg.auto_noCCseg.mgz"
+    mask_mgz = "${subjects_dir}/${subject_id}/mri/mask.mgz"
 
-    network_sagittal_path = "${fastsurfer_home}/checkpoints/Sagittal_Weights_FastSurferCNN/ckpts/Epoch_30_training_state.pkl"
-    network_coronal_path = "${fastsurfer_home}/checkpoints/Coronal_Weights_FastSurferCNN/ckpts/Epoch_30_training_state.pkl"
-    network_axial_path = "${fastsurfer_home}/checkpoints/Axial_Weights_FastSurferCNN/ckpts/Epoch_30_training_state.pkl"
+    network_sagittal_path = "${fastsurfer_home}/checkpoints/aparc_vinn_sagittal_v2.0.0.pkl"
+    network_coronal_path = "${fastsurfer_home}/checkpoints/aparc_vinn_coronal_v2.0.0.pkl"
+    network_axial_path = "${fastsurfer_home}/checkpoints/aparc_vinn_axial_v2.0.0.pkl"
     """
     ${gpu_script_py} ${device} ${gpu_vram} executor ${script_py} \
-    --in_name ${orig_mgz} \
-    --out_name ${seg_deep_mgz} \
+    --t1 ${orig_mgz} \
+    --asegdkt_segfile ${seg_deep_mgz} \
     --conformed_name ${subjects_dir}/${subject_id}/mri/conformed.mgz \
-    --order 1 \
-    --network_sagittal_path ${network_sagittal_path} \
-    --network_coronal_path ${network_coronal_path} \
-    --network_axial_path ${network_axial_path} \
-    --batch_size 1 --simple_run --run_viewagg_on check
+    --brainmask_name ${mask_mgz} \
+    --aseg_name ${aseg_auto_noccseg_mgz} \
+    --seg_log ${subjects_dir}/${subject_id}/scripts/fastsurfer.log \
+    --vox_size 1 \
+    --ckpt_sag ${network_sagittal_path} \
+    --ckpt_cor ${network_coronal_path} \
+    --ckpt_ax ${network_axial_path} \
+    --batch_size 8 --allow_root
     """
 }
 
@@ -263,7 +270,7 @@ process anat_N4_bias_correct {
 
     input:
     val(subjects_dir)
-    tuple(val(subject_id), val(orig_mgz), val(mask_mgz))
+    tuple(val(subject_id), val(orig_mgz), val(seg_deep_mgz))
 
     val(fastsurfer_home)
 
@@ -281,7 +288,7 @@ process anat_N4_bias_correct {
     python3 ${script_py} \
     --in ${orig_mgz} \
     --out ${orig_nu_mgz} \
-    --mask ${mask_mgz} \
+    --aseg ${seg_deep_mgz} \
     --threads ${fsthreads}
     """
 }
@@ -2652,10 +2659,9 @@ workflow anat_wf {
     (orig_mgz, rawavg_mgz) = anat_motioncor(subjects_dir, subject_id, fsthreads)
 
     // fastsurfer
-    seg_deep_mgz = anat_segment(subjects_dir, orig_mgz, fastsurfer_home, device, gpu_lock)
-    (aseg_auto_noccseg_mgz, mask_mgz) = anat_reduce_to_aseg(subjects_dir, seg_deep_mgz, fastsurfer_home)
+    (seg_deep_mgz, aseg_auto_noccseg_mgz, mask_mgz) = anat_segment(subjects_dir, orig_mgz, fastsurfer_home, device, gpu_lock)
 
-    anat_N4_bias_correct_input = orig_mgz.join(mask_mgz)
+    anat_N4_bias_correct_input = orig_mgz.join(seg_deep_mgz)
     orig_nu_mgz = anat_N4_bias_correct(subjects_dir, anat_N4_bias_correct_input, fastsurfer_home, fsthreads)
 
     anat_talairach_and_nu_input = orig_mgz.join(orig_nu_mgz)

@@ -285,6 +285,10 @@ RUN python3 -c "import templateflow.api as tflow; tflow.get('MNI152NLin6Asym', d
 RUN find $HOME/.cache/templateflow -type d -exec chmod go=u {} + && \
     find $HOME/.cache/templateflow -type f -exec chmod go=u {} +
 
+### FastSurfer
+# python3 FastSurferCNN/download_checkpoints.py --all
+ENV PYTHONPATH="${PYTHONPATH}:/opt/DeepPrep/deepprep/FastSurfer"
+
 COPY deepprep/model/FastCSR /opt/model/FastCSR
 COPY deepprep/model/SUGAR /opt/model/SUGAR
 COPY deepprep/model/SynthMorph /opt/model/SynthMorph
