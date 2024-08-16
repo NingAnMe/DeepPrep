@@ -103,6 +103,8 @@ process anat_create_subject_orig_dir {
 process anat_motioncor {
     tag "${subject_id}"
 
+    label "maxForks_5"
+
     cpus 1
     memory { 1.GB * (task.attempt ** 2) }
 
