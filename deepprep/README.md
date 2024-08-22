@@ -105,23 +105,25 @@ deepprep:${DEEPPREP_VERSION}
 -with-timeline /DEEPPREP_RESULT_DIR/QC/timeline.html \
 --bold_task_type rest --bold_only True
 
-/tmp/pycharm_project_640/deepprep/deepprep.sh run /tmp/pycharm_project_640/deepprep/nextflow/deepprep.nf \
--resume \
--c /nextflow.docker.local.config --bids_dir /mnt/ngshare/temp/ds004498 \
---subjects_dir /mnt/ngshare/temp/ds004498_DeepPrep/Recon \
---bold_preprocess_path /mnt/ngshare/temp/ds004498_DeepPrep/BOLD \
---qc_result_path /mnt/ngshare/temp/ds004498_DeepPrep/QC \
--with-report /mnt/ngshare/temp/ds004498_DeepPrep/QC/report.html \
--with-timeline /mnt/ngshare/temp/ds004498_DeepPrep/QC/timeline.html \
---bold_task_type rest --bold_only True
+export bids_dir=/mnt/ngshare/DeepPrep/CIFTI/UKB_001 \
+&& export subjects_dir=/mnt/ngshare/DeepPrep/FastSurfer/UKB_001_recon-DP242x_preproc-DP242x/Recon \
+&& export preproc_dir=/mnt/ngshare/DeepPrep/FastSurfer/UKB_001_recon-DP242x_preproc-DP242x \
+&& export postproc_dir=/mnt/ngshare/DeepPrep/FastSurfer/UKB_001_recon-DP242x_preproc-DP242x_postproc-DA \
+&& /opt/DeepPrep/deepprep/deepprep.sh ${bids_dir} ${preproc_dir} participant \
+--bold_task_type rest --anat_only \
+--fs_license_file /mnt/ngshare/DeepPrep/CIFTI/license.txt  \
+--skip_bids_validation \
+--subjects_dir ${subjects_dir} \
+--resume
 
 ## local Dev
 service start redis-server
-cd /root/workspace/DeepPrep/deepprep/nextflow 
+cd /opt/DeepPrep/deepprep/nextflow 
 nextflow run -c nextflow.docker.config deepprep.nf
 
 apt-get update && \
 apt-get install -y aptitude && \
+micromamba install openssh -c conda-forge && \
 aptitude install -y vim openssh-client openssh-server && \
 sed -i "33c\PermitRootLogin yes" /etc/ssh/sshd_config && \
 service ssh restart && passwd
