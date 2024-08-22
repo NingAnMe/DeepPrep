@@ -990,6 +990,30 @@ process anat_cortparc_aparc_a2009s {
 }
 
 
+process anat_cortparc_aparc_DKTatlas {
+    tag "${subject_id}"
+
+    cpus 1
+    memory '1.2 GB'
+
+    input:
+    val(subjects_dir)
+    tuple(val(subject_id), val(hemi), val(cortex_label), val(sphere_reg_surf), val(smoothwm_surf), val(aseg_presurf_mgz))
+    // smoothwm_surf is hidden needed
+    val(freesurfer_home)
+
+    output:
+    tuple(val(subject_id), val(hemi), val("${subjects_dir}/${subject_id}/label/${hemi}.aparc.DKTatlas.annot")) // emit: aparc_a2009s_annot
+
+    script:
+    """
+    mris_ca_label -SDIR ${subjects_dir} -l ${cortex_label} -aseg ${aseg_presurf_mgz} -seed 1234 ${subject_id} ${hemi} ${sphere_reg_surf} \
+    ${freesurfer_home}/average/${hemi}.DKTaparc.atlas.acfb40.noaparc.i12.2016-08-02.gcs \
+    ${subjects_dir}/${subject_id}/label/${hemi}.aparc.DKTatlas.annot
+    """
+}
+
+
 process anat_pial_surface {
     tag "${subject_id}"
 
@@ -1108,6 +1132,35 @@ process anat_parcstats2 {
     SUBJECTS_DIR=${subjects_dir} mris_anatomical_stats -th3 -mgz -cortex ${lh_cortex_label} -f ${subjects_dir}/${subject_id}/stats/lh.aparc.a2009s.stats -b -a ${lh_aparc_annot} -c ${subjects_dir}/${subject_id}/label/aparc.a2009s.annot.ctab ${subject_id} lh white
     SUBJECTS_DIR=${subjects_dir} mris_anatomical_stats -th3 -mgz -cortex ${rh_cortex_label} -f ${subjects_dir}/${subject_id}/stats/rh.aparc.a2009s.pial.stats -b -a ${rh_aparc_annot} -c ${subjects_dir}/${subject_id}/label/aparc.a2009s.annot.ctab ${subject_id} lh pial
     SUBJECTS_DIR=${subjects_dir} mris_anatomical_stats -th3 -mgz -cortex ${rh_cortex_label} -f ${subjects_dir}/${subject_id}/stats/rh.aparc.a2009s.stats -b -a ${rh_aparc_annot} -c ${subjects_dir}/${subject_id}/label/aparc.a2009s.annot.ctab ${subject_id} lh white
+    """
+}
+
+
+process anat_parcstats3 {
+    tag "${subject_id}"
+
+    cpus 1
+    memory '500 MB'
+
+    input:
+    val(subjects_dir)
+    tuple(val(subject_id), val(lh_white_surf), val(lh_cortex_label), val(lh_pial_surf), val(lh_aparc_annot), val(rh_white_surf), val(rh_cortex_label), val(rh_pial_surf), val(rh_aparc_annot), val(wm_mgz))
+
+    output:
+    tuple(val(subject_id), val("${subjects_dir}/${subject_id}/stats/lh.aparc.DKTatlas.pial.stats")) // emit: aparc_pial_stats
+    tuple(val(subject_id), val("${subjects_dir}/${subject_id}/stats/rh.aparc.DKTatlas.pial.stats")) // emit: aparc_pial_stats
+    tuple(val(subject_id), val("${subjects_dir}/${subject_id}/stats/lh.aparc.DKTatlas.stats")) // emit: aparc_stats
+    tuple(val(subject_id), val("${subjects_dir}/${subject_id}/stats/rh.aparc.DKTatlas.stats")) // emit: aparc_stats
+
+    script:
+//     """
+//     recon-all -sd ${subjects_dir} -subject ${subject_id} -parcstats -threads ${threads} -itkthreads ${threads}
+//     """
+    """
+    SUBJECTS_DIR=${subjects_dir} mris_anatomical_stats -th3 -mgz -cortex ${lh_cortex_label} -f ${subjects_dir}/${subject_id}/stats/lh.aparc.DKTatlas.pial.stats -b -a ${lh_aparc_annot} -c ${subjects_dir}/${subject_id}/label/aparc.DKTatlas.annot.ctab ${subject_id} lh pial
+    SUBJECTS_DIR=${subjects_dir} mris_anatomical_stats -th3 -mgz -cortex ${lh_cortex_label} -f ${subjects_dir}/${subject_id}/stats/lh.aparc.DKTatlas.stats -b -a ${lh_aparc_annot} -c ${subjects_dir}/${subject_id}/label/aparc.DKTatlas.annot.ctab ${subject_id} lh white
+    SUBJECTS_DIR=${subjects_dir} mris_anatomical_stats -th3 -mgz -cortex ${rh_cortex_label} -f ${subjects_dir}/${subject_id}/stats/rh.aparc.DKTatlas.pial.stats -b -a ${rh_aparc_annot} -c ${subjects_dir}/${subject_id}/label/aparc.DKTatlas.annot.ctab ${subject_id} lh pial
+    SUBJECTS_DIR=${subjects_dir} mris_anatomical_stats -th3 -mgz -cortex ${rh_cortex_label} -f ${subjects_dir}/${subject_id}/stats/rh.aparc.DKTatlas.stats -b -a ${rh_aparc_annot} -c ${subjects_dir}/${subject_id}/label/aparc.DKTatlas.annot.ctab ${subject_id} lh white
     """
 }
 
@@ -1271,6 +1324,34 @@ process anat_aparc_a2009s2aseg {
     --lh-cortex-mask ${lh_cortex_label} --lh-white ${lh_white_surf} \
     --lh-pial ${lh_pial_surf} \
     --rh-annot ${rh_aparc_annot} 12100 \
+    --rh-cortex-mask ${rh_cortex_label} --rh-white ${rh_white_surf} \
+    --rh-pial ${rh_pial_surf}
+    """
+}
+
+
+process anat_aparc_DKTatlas2aseg {
+    tag "${subject_id}"
+
+    cpus 4
+    memory '1 GB'
+
+    input:
+    val(subjects_dir)
+    tuple(val(subject_id), val(aseg_mgz), val(ribbon_mgz), val(lh_white_surf), val(lh_pial_surf), val(lh_cortex_label), val(lh_aparc_annot), val(rh_white_surf), val(rh_pial_surf), val(rh_cortex_label), val(rh_aparc_annot))
+    val(fsthreads)
+
+    output:
+    tuple(val(subject_id), val("${subjects_dir}/${subject_id}/mri/aparc.DKTatlas+aseg.mgz")) // emit: parcstats
+
+    script:
+    """
+    SUBJECTS_DIR=${subjects_dir} mri_surf2volseg --o ${subjects_dir}/${subject_id}/mri/aparc.DKTatlas+aseg.mgz --label-cortex --i ${aseg_mgz} \
+    --nthreads ${fsthreads} \
+    --lh-annot ${lh_aparc_annot} 1000 \
+    --lh-cortex-mask ${lh_cortex_label} --lh-white ${lh_white_surf} \
+    --lh-pial ${lh_pial_surf} \
+    --rh-annot ${rh_aparc_annot} 2000 \
     --rh-cortex-mask ${rh_cortex_label} --rh-white ${rh_white_surf} \
     --rh-pial ${rh_pial_surf}
     """
@@ -2784,6 +2865,21 @@ workflow anat_wf {
     aparc_aseg_svg = qc_plot_aparc_aseg(subjects_dir, qc_plot_aparc_aseg_input, qc_utils_path, qc_result_path, freesurfer_home)
 
     qc_report = qc_anat_create_report(bids_dir, subjects_dir, qc_result_path, aparc_aseg_svg, reports_utils_path)
+
+    if (params.dktatlas.toString().toUpperCase() == 'TRUE') {
+        println "INFO: DKTatlas preprocess others == TURE"
+        aparc_DKTatlas_annot = anat_cortparc_aparc_DKTatlas(subjects_dir, anat_cortparc_aparc_input, freesurfer_home)  // if for paper, comment out
+
+        lh_anat_parcstats3_input = white_surf.join(cortex_label, by: [0, 1]).join(pial_surf, by: [0, 1]).join(aparc_DKTatlas_annot, by: [0, 1]).join(subject_id_lh, by: [0, 1]).map { tuple -> return tuple[0, 2, 3, 4, 5] }
+        rh_anat_parcstats3_input = white_surf.join(cortex_label, by: [0, 1]).join(pial_surf, by: [0, 1]).join(aparc_DKTatlas_annot, by: [0, 1]).join(subject_id_rh, by: [0, 1]).map { tuple -> return tuple[0, 2, 3, 4, 5] }
+        anat_parcstats3_input = lh_anat_parcstats3_input.join(rh_anat_parcstats3_input).join(wm_mgz)
+        (aparc_pial_stats, aparc_stats) = anat_parcstats3(subjects_dir, anat_parcstats3_input)  // if for paper, comment out
+
+        lh_anat_aparc_DKTatlas2aseg_input = white_surf.join(pial_surf, by: [0, 1]).join(cortex_label, by: [0, 1]).join(aparc_DKTatlas_annot, by: [0, 1]).join(subject_id_lh, by: [0, 1]).map { tuple -> return tuple[0, 2, 3, 4, 5] }
+        rh_anat_aparc_DKTatlas2aseg_input = white_surf.join(pial_surf, by: [0, 1]).join(cortex_label, by: [0, 1]).join(aparc_DKTatlas_annot, by: [0, 1]).join(subject_id_rh, by: [0, 1]).map { tuple -> return tuple[0, 2, 3, 4, 5] }
+        anat_aparc_DKTatlas2aseg_inputs = aseg_mgz.join(ribbon_mgz).join(lh_anat_aparc_DKTatlas2aseg_input).join(rh_anat_aparc_DKTatlas2aseg_input)
+        aparc_DKTatlas_aseg_mgz = anat_aparc_DKTatlas2aseg(subjects_dir, anat_aparc_DKTatlas2aseg_inputs, fsthreads)  // if for paper, comment out
+    }
 
     // APP
     if (params.preprocess_others.toString().toUpperCase() == 'TRUE') {
