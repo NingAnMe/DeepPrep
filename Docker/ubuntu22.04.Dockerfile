@@ -291,7 +291,7 @@ COPY deepprep/model/SynthMorph /opt/model/SynthMorph
 
 # Dev
 COPY deepprep/FastCSR /opt/DeepPrep/deepprep/FastCSR
-COPY deepprep/SUGAR /opt/DeepPrep/deepprep/SUGAR
+COPY deepprep/SUGAR2 /opt/DeepPrep/deepprep/SUGAR
 COPY deepprep/FastSurfer /opt/DeepPrep/deepprep/FastSurfer
 COPY deepprep/SynthMorph /opt/DeepPrep/deepprep/SynthMorph
 COPY deepprep/nextflow /opt/DeepPrep/deepprep/nextflow
