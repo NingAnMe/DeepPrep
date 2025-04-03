@@ -40,5 +40,5 @@ if __name__ == '__main__':
     T1_2mm = args.t1_native2mm  # subj_func_dir / f'{args.subject_id}_space-T1w_res-2mm_desc-skull_T1w.nii.gz'
     norm_2mm = args.norm_native2mm  # subj_func_dir / f'{args.subject_id}_space-T1w_res-2mm_desc-noskull_T1w.nii.gz'
     template = tflow.get(args.template_space, desc=None, resolution=2, suffix='T1w', extension='nii.gz')
+    assert template, f"template_space: {template}"  # 名称错误导致template为[]的问题
     run_joint_registration(args.subject_id, args.synth_script, subj_anat_dir, norm_2mm, T1_2mm, template, args.synth_model_path, args.template_space)
-
