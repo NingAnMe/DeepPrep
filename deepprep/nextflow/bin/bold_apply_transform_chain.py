@@ -181,6 +181,7 @@ if __name__ == '__main__':
     # get the T1w.json
     update_entities = {'desc': 'preproc', 'suffix': 'bold', 'extension': '.json'}
     t1_json = get_preproc_file(args.subject_id, args.bold_preprocess_dir, bold_file, update_entities)
+    assert os.path.exists(t1_json), f'{t1_json} does not exist'
 
     transform_save_path = Path(args.work_dir) / 'bold_synthmorph_transform_chain' / args.bold_id
     transform_save_path.mkdir(exist_ok=True, parents=True)
@@ -195,7 +196,8 @@ if __name__ == '__main__':
     # load fieldmap info
     if args.bold_sdc:
         update_entities = {'suffix': 'bold', 'extension': '.json'}
-        bold_json = get_preproc_file(args.subject_id, args.bids_dir, bold_file, update_entities)
+        bold_json = get_preproc_file(args.subject_id, args.bids_dir, bold_file, update_entities)  # get the bold.json
+        assert os.path.exists(bold_json), f'{bold_json} does not exist'
         with open(str(bold_json)) as f:
             bold_info = json.load(f)
 
