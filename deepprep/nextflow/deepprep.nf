@@ -23,7 +23,7 @@ process anat_get_t1w_file_in_bids {
 
     input:  // https://www.nextflow.io/docs/latest/process.html#inputs
     val(bids_dir)
-    val(subjects)
+    val(participant_label)
     val(gpu_lock)
 
     output:
@@ -38,7 +38,7 @@ process anat_get_t1w_file_in_bids {
     }
     else {
         """
-        ${script_py} --bids-dir ${bids_dir} --subject-ids ${subjects}
+        ${script_py} --bids-dir ${bids_dir} --subject-ids ${participant_label}
         """
     }
 
@@ -1488,7 +1488,7 @@ process bold_get_bold_file_in_bids {
     input:  // https://www.nextflow.io/docs/latest/process.html#inputs
     val(bids_dir)
     val(subjects_dir)
-    val(subjects)
+    val(participant_label)
     val(bold_task_type)
     val(bold_only)
     val(gpu_lock)
@@ -1512,7 +1512,7 @@ process bold_get_bold_file_in_bids {
         ${script_py} \
         --bids_dir ${bids_dir} \
         --subjects_dir ${subjects_dir} \
-        --subject_ids ${subjects} \
+        --subject_ids ${participant_label} \
         --task_type ${bold_task_type} \
         --bold_only ${bold_only}
         """

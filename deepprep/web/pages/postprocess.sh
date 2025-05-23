@@ -17,7 +17,7 @@ debug=""
 help="DeepPrep args:
 deepprep-docker [bids_dir] [output_dir] [{participant}]
                 [--fs_license_file PATH] [--subjects_dir PATH] [--confounds_index_file Path]
-                [--task_id '[task1 task2 task3 ...]'] [--participant_label '[001 002 003 ...]']
+                [--task_id '[task1 task2 task3 ...]'] [--participant_label '[sub-001 sub-002 sub-003 ...]']
                 [--skip_frame 0] [--repetition_time 0]
                 [--spaces '[None MNI152NLin6Asym MNI152NLin2009cAsym fsnative fsaverage fsaverage6 ...]']
                 [--cpus 10] [--memory 20]

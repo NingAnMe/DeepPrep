@@ -108,6 +108,6 @@ fMRIPrep CSF mask sample
 
 1. You can now run multiple tasks with ``--bold_task_type '[task1 task2 task3 ...]'``. (#107)
 
-2. Select multiple participants to process with ``--participant_label '[001 002 003 ...]'``.
+2. Select multiple participants to process with ``--participant_label '[sub-001 sub-002 sub-003 ...]'``.
 
 3. Opt to skip generating outputs in either volume space with ``--bold_volume_space None`` or in surface space with ``--bold_surface_spaces None``. (#115, from @xingyu-liu)

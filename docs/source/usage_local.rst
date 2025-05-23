@@ -50,7 +50,7 @@ DeepPrep: Deep learning empowered preprocessing workflow 25.1.0:
 .. code-block:: none
 
    usage: deepprep-docker [bids_dir] [output_dir] [{participant}] [--bold_task_type '[task1 task2 task3 ...]']
-                          [--fs_license_file PATH] [--participant_label '[001 002 003 ...]']
+                          [--fs_license_file PATH] [--participant_label '[sub-001 sub-002 sub-003 ...]']
                           [--subjects_dir PATH] [--skip_bids_validation]
                           [--anat_only] [--bold_only] [--bold_sdc] [--bold_confounds] [--bold_skip_frame 0]
                           [--bold_cifti] [--bold_surface_spaces '[None fsnative fsaverage fsaverage6 ...]']
@@ -86,7 +86,7 @@ Sample Docker Command
     + ``--bold_task_type`` - the task label of BOLD images (i.e. ``rest``, ``motor``).
 
 **Dig further (optional commands)**
-    + ``--participant_label`` - the subject ID you want to process, i.e. ``'sub-001 sub-002'``. Otherwise, all the subjects in the ``<bids_dir>`` will be processed by default.
+    + ``--participant_label`` - the subject ID you want to process, i.e. ``"sub-001,sub-002"``. Otherwise, all the subjects in the ``<bids_dir>`` will be processed by default.
     + ``--subjects_dir`` - the output directory of *Recon* files, default is ``<output_dir>/Recon``.
     + ``--skip_bids_validation`` - with this flag, the BIDS format validation of the input dataset will be skipped.
     + ``--anat_only`` - with this flag, only the *anatomical* images will be processed.

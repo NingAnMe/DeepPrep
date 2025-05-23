@@ -42,6 +42,10 @@ st.page_link("pages/3_📝Quick QC.py",
     label="👉Quick QC of T1w & BOLD🔗"
 )
 
+st.page_link("pages/4_🚀Target Auto Planing.py",
+    label="👉Target Auto Planing🔗"
+)
+
 st.markdown(
     """
     -----------------
