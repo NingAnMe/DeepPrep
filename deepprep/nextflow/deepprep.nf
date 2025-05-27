@@ -31,7 +31,7 @@ process anat_get_t1w_file_in_bids {
 
     script:
     script_py = "anat_get_t1w_file_in_bids.py"
-    if (subjects.toString() == '') {
+    if (participant_label.toString() == '') {
         """
         ${script_py} --bids-dir ${bids_dir}
         """
@@ -1498,7 +1498,7 @@ process bold_get_bold_file_in_bids {
 
     script:
     script_py = "bold_get_bold_file_in_bids.py"
-    if (subjects.toString() == '') {
+    if (participant_label.toString() == '') {
         """
         ${script_py} \
         --bids_dir ${bids_dir} \
