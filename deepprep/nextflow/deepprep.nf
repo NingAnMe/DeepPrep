@@ -343,16 +343,27 @@ process anat_T1 {
     input:
     val(subjects_dir)
     tuple(val(subject_id), val(nu_mgz))
+    val(app)
 
     output:
     tuple(val(subject_id), val("${t1_mgz}")) // emit: t1_mgz
 
     script:
+    orig_001_mgz = "${subjects_dir}/${subject_id}/mri/orig/001.mgz"
     t1_mgz = "${subjects_dir}/${subject_id}/mri/T1.mgz"
 
-    """
-    mri_normalize -seed 1234 -g 1 -mprage ${nu_mgz} ${t1_mgz}
-    """
+
+    if (app.toString().toUpperCase() == 'TRUE') {
+        """
+        recon-all -motioncor -talairach -nuintensitycor -normalization -i ${orig_001_mgz} -s ${subject_id} -sd ${subjects_dir}/${subject_id}/tmp
+        cp -f ${subjects_dir}/${subject_id}/tmp/${subject_id}/mri/T1.mgz ${t1_mgz}
+        """
+    }
+    else {
+        """
+        mri_normalize -seed 1234 -g 1 -mprage ${nu_mgz} ${t1_mgz}
+        """
+    }
 }
 
 
@@ -2740,7 +2751,7 @@ workflow anat_wf {
     anat_talairach_and_nu_input = orig_mgz.join(orig_nu_mgz)
     (nu_mgz, talairach_auto_xfm, talairach_xfm, talairach_xfm_lta, talairach_with_skull_lta, talairach_lta) = anat_talairach_and_nu(subjects_dir, anat_talairach_and_nu_input, freesurfer_home)
 
-    t1_mgz = anat_T1(subjects_dir, nu_mgz)
+    t1_mgz = anat_T1(subjects_dir, nu_mgz, params.preprocess_others)
 
     anat_brainmask_input = nu_mgz.join(mask_mgz)
     (norm_mgz, brainmask_mgz) = anat_brainmask(subjects_dir, anat_brainmask_input)
