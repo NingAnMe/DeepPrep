@@ -1078,8 +1078,8 @@ process anat_parcstats {
     """
     SUBJECTS_DIR=${subjects_dir} mris_anatomical_stats -th3 -mgz -cortex ${lh_cortex_label} -f ${subjects_dir}/${subject_id}/stats/lh.aparc.pial.stats -b -a ${lh_aparc_annot} -c ${subjects_dir}/${subject_id}/label/aparc.annot.ctab ${subject_id} lh pial
     SUBJECTS_DIR=${subjects_dir} mris_anatomical_stats -th3 -mgz -cortex ${lh_cortex_label} -f ${subjects_dir}/${subject_id}/stats/lh.aparc.stats -b -a ${lh_aparc_annot} -c ${subjects_dir}/${subject_id}/label/aparc.annot.ctab ${subject_id} lh white
-    SUBJECTS_DIR=${subjects_dir} mris_anatomical_stats -th3 -mgz -cortex ${rh_cortex_label} -f ${subjects_dir}/${subject_id}/stats/rh.aparc.pial.stats -b -a ${rh_aparc_annot} -c ${subjects_dir}/${subject_id}/label/aparc.annot.ctab ${subject_id} lh pial
-    SUBJECTS_DIR=${subjects_dir} mris_anatomical_stats -th3 -mgz -cortex ${rh_cortex_label} -f ${subjects_dir}/${subject_id}/stats/rh.aparc.stats -b -a ${rh_aparc_annot} -c ${subjects_dir}/${subject_id}/label/aparc.annot.ctab ${subject_id} lh white
+    SUBJECTS_DIR=${subjects_dir} mris_anatomical_stats -th3 -mgz -cortex ${rh_cortex_label} -f ${subjects_dir}/${subject_id}/stats/rh.aparc.pial.stats -b -a ${rh_aparc_annot} -c ${subjects_dir}/${subject_id}/label/aparc.annot.ctab ${subject_id} rh pial
+    SUBJECTS_DIR=${subjects_dir} mris_anatomical_stats -th3 -mgz -cortex ${rh_cortex_label} -f ${subjects_dir}/${subject_id}/stats/rh.aparc.stats -b -a ${rh_aparc_annot} -c ${subjects_dir}/${subject_id}/label/aparc.annot.ctab ${subject_id} rh white
     """
 }
 
@@ -1107,8 +1107,8 @@ process anat_parcstats2 {
     """
     SUBJECTS_DIR=${subjects_dir} mris_anatomical_stats -th3 -mgz -cortex ${lh_cortex_label} -f ${subjects_dir}/${subject_id}/stats/lh.aparc.a2009s.pial.stats -b -a ${lh_aparc_annot} -c ${subjects_dir}/${subject_id}/label/aparc.a2009s.annot.ctab ${subject_id} lh pial
     SUBJECTS_DIR=${subjects_dir} mris_anatomical_stats -th3 -mgz -cortex ${lh_cortex_label} -f ${subjects_dir}/${subject_id}/stats/lh.aparc.a2009s.stats -b -a ${lh_aparc_annot} -c ${subjects_dir}/${subject_id}/label/aparc.a2009s.annot.ctab ${subject_id} lh white
-    SUBJECTS_DIR=${subjects_dir} mris_anatomical_stats -th3 -mgz -cortex ${rh_cortex_label} -f ${subjects_dir}/${subject_id}/stats/rh.aparc.a2009s.pial.stats -b -a ${rh_aparc_annot} -c ${subjects_dir}/${subject_id}/label/aparc.a2009s.annot.ctab ${subject_id} lh pial
-    SUBJECTS_DIR=${subjects_dir} mris_anatomical_stats -th3 -mgz -cortex ${rh_cortex_label} -f ${subjects_dir}/${subject_id}/stats/rh.aparc.a2009s.stats -b -a ${rh_aparc_annot} -c ${subjects_dir}/${subject_id}/label/aparc.a2009s.annot.ctab ${subject_id} lh white
+    SUBJECTS_DIR=${subjects_dir} mris_anatomical_stats -th3 -mgz -cortex ${rh_cortex_label} -f ${subjects_dir}/${subject_id}/stats/rh.aparc.a2009s.pial.stats -b -a ${rh_aparc_annot} -c ${subjects_dir}/${subject_id}/label/aparc.a2009s.annot.ctab ${subject_id} rh pial
+    SUBJECTS_DIR=${subjects_dir} mris_anatomical_stats -th3 -mgz -cortex ${rh_cortex_label} -f ${subjects_dir}/${subject_id}/stats/rh.aparc.a2009s.stats -b -a ${rh_aparc_annot} -c ${subjects_dir}/${subject_id}/label/aparc.a2009s.annot.ctab ${subject_id} rh white
     """
 }
 
@@ -2683,20 +2683,23 @@ process anat_segstats {
 
     input:
     val(subjects_dir)
-    tuple(val(subject_id), val(aseg_mgz), val(norm_mgz), val(brainmask_mgz), val(ribbon_mgz))
     val(fastsurfer_home)
+    tuple(val(subject_id), val(aseg_mgz), val(norm_mgz), val(brainmask_mgz), val(ribbon_mgz))
 
     output:
-    tuple(val(subject_id), val(aseg_stats))
+    tuple(val(subject_id), val(aseg_stats)) // emit: aseg_stats
 
     script:
     aseg_stats = "${subjects_dir}/${subject_id}/stats/aseg.stats"
-    asegstatsLUT_color = "${fastsurfer_home}/ASegStatsLUT.txt"
+    asegstatslut_color = "${fastsurfer_home}/ASegStatsLUT.txt"
     threads = 1
 
     script:
     """
-    SUBJECTS_DIR=${subjects_dir}  mri_segstats --seed 1234 --seg ${aseg_mgz} --sum ${aseg_stats} --pv ${norm_mgz} --empty --brainmask ${brainmask_mgz} --brain-vol-from-seg --excludeid 0 --excl-ctxgmwm --supratent --subcortgray --in ${norm_mgz} --in-intensity-name norm --in-intensity-units MR --etiv --surf-wm-vol --surf-ctx-vol --totalgray --euler --ctab ${asegstatsLUT_color} --subject ${subject_id}
+    mri_segstats --seg ${aseg_mgz} --sum ${aseg_stats} --pv ${norm_mgz} --empty --brainmask ${brainmask_mgz} \
+    --brain-vol-from-seg --excludeid 0 --excl-ctxgmwm --supratent --subcortgray --in ${norm_mgz} \
+    --in-intensity-name norm --in-intensity-units MR --etiv --surf-wm-vol --surf-ctx-vol --totalgray --euler \
+    --ctab ${asegstatslut_color} --subject ${subject_id} --sd ${subjects_dir}
     """
 
 }
@@ -2850,6 +2853,9 @@ workflow anat_wf {
     anat_aparc2aseg_inputs = aseg_mgz.join(ribbon_mgz).join(lh_anat_aparc2aseg_input).join(rh_anat_aparc2aseg_input)
     aparc_aseg_mgz = anat_aparc2aseg(subjects_dir, anat_aparc2aseg_inputs, fsthreads)
 
+    anat_segstats_input = aseg_mgz.join(norm_mgz).join(brainmask_mgz).join(ribbon_mgz)
+    aseg_stats = anat_segstats(subjects_dir, freesurfer_home, anat_segstats_input)
+
     // QC report
     qc_plot_volsurf_input_lh = white_surf.join(pial_surf, by: [0, 1]).join(subject_id_lh, by: [0, 1]).map { tuple -> return tuple[0, 2, 3] }
     qc_plot_volsurf_input_rh = white_surf.join(pial_surf, by: [0, 1]).join(subject_id_rh, by: [0, 1]).map { tuple -> return tuple[0, 2, 3] }
@@ -2893,8 +2899,6 @@ workflow anat_wf {
 
         anat_ca_register_input = brainmask_mgz.join(talairach_lta).join(norm_mgz)
         talairach_m3z = anat_ca_register(subjects_dir, anat_ca_register_input, freesurfer_home)
-        anat_segstats_input = aseg_mgz.join(norm_mgz).join(brainmask_mgz).join(ribbon_mgz)
-        aseg_stats = anat_segstats(subjects_dir, anat_segstats_input, freesurfer_home)
     }
 
     lh_pial_surf = pial_surf.join(subject_id_lh, by: [0, 1]).map { tuple -> return tuple[0, 2] }
@@ -2951,7 +2955,6 @@ workflow bold_wf {
     // GPU
     device = params.device
     participant_label = params.participant_label
-
     // set dir path
     bids_dir = params.bids_dir
 
