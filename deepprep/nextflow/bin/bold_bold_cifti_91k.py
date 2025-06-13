@@ -336,6 +336,7 @@ def get_space_bold(subject_id, bids_preproc, bold_orig_file):
     mni152_bold_info['res'] = '02'
     mni152_bold_info['desc'] = 'preproc'
     mni152_bold_info['suffix'] = 'bold'
+    mni152_bold_info['extension'] = '.nii.gz'
     mni152_bold_file = layout_preproc.get(**mni152_bold_info)[0]
 
     repetition_time = layout_preproc.get_metadata(right_bold_file.path)['RepetitionTime']

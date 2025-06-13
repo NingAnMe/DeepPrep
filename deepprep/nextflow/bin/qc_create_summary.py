@@ -14,11 +14,11 @@ def get_t1w_and_bold(bids_dir, subject_ids, bold_task_type):
     t1w_files = []
     bold_files = []
 
-    for t1w_file in layout.get(return_type='filename', subject=subject_ids.split('-')[1], suffix="T1w", extension='.nii.gz'):
+    for t1w_file in layout.get(return_type='filename', subject=subject_ids.split('-')[1], suffix="T1w", extension=['.nii.gz', '.nii']):
         t1w_files.append(t1w_file)
 
     if bold_task_type is not None:
-        for bold_file in layout.get(return_type='filename', subject=subject_ids.split('-')[1], task=bold_task_type, suffix='bold', extension='.nii.gz'):
+        for bold_file in layout.get(return_type='filename', subject=subject_ids.split('-')[1], task=bold_task_type, suffix='bold', extension=['.nii.gz', '.nii']):
             bold_files.append(bold_file)
     return t1w_files, bold_files
 
@@ -27,7 +27,7 @@ def get_t1w(bids_dir, subject_id):
     layout = bids.BIDSLayout(bids_dir, derivatives=False)
     t1w_files = []
 
-    for t1w_file in layout.get(return_type='filename', subject=subject_id.split('-')[1], suffix="T1w", extension='.nii.gz'):
+    for t1w_file in layout.get(return_type='filename', subject=subject_id.split('-')[1], suffix="T1w", extension=['.nii.gz', '.nii']):
         t1w_files.append(t1w_file)
 
     return t1w_files

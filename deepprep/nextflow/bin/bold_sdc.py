@@ -205,7 +205,7 @@ def main(bids_path, subject_id, bold_id, bold_file_name, bold_input_file, boldre
 
     print('bold_file_name : ', bold_file_name)
     bold_file = None
-    for _f in layout.get('file', subject=subject_id, suffix="bold", extension='.nii.gz'):
+    for _f in layout.get('file', subject=subject_id, suffix="bold", extension=['.nii.gz', '.nii']):
         if bold_file_name in _f:
             bold_file = _f
             print('bold_file : ', bold_file)
