@@ -55,6 +55,10 @@ elif not output_dir.startswith('/'):
     st.error("The path must be an absolute path that starts with '/'.")
     deepprep_cmd += ' {output_dir}'
     commond_error = True
+elif output_dir == bids_dir:
+    st.error("The Output Path must be different from the BIDS Path!")
+    deepprep_cmd += ' {output_dir}'
+    commond_error = True
 else:
     deepprep_cmd += f' {output_dir}'
 deepprep_cmd += f' participant'
@@ -129,11 +133,9 @@ else:
     assert len(bold_bandpass.split('-')) == 2
     deepprep_cmd += f' --bandpass {bold_bandpass}'
 
-participant_label = st.text_input("the subject IDs (optional)", placeholder="001 002",
-                                  help="Identify the subjects you'd like to process by their IDs, i.e. '001 002'.")
+participant_label = st.text_input("the subject IDs (optional)", placeholder="sub-001 sub-002 sub-003",
+                                  help="Identify the subjects you'd like to process by their IDs, i.e. 'sub-001 sub-002 sub-003'.")
 if participant_label:
-    if 'sub-' in participant_label:
-        participant_label = participant_label.replace('sub-', '')
     participant_label = participant_label.replace("'", "")
     participant_label = participant_label.replace('"', "")
     deepprep_cmd += f" --subject_id '{participant_label}'"

@@ -51,6 +51,10 @@ if not output_dir:
 elif not output_dir.startswith('/'):
     st.error("The path must be an absolute path starts with '/'.")
     commond_error = True
+elif output_dir == bids_dir:
+    st.error("The Output Path must be different from the BIDS Path!")
+    deepprep_cmd += ' {output_dir}'
+    commond_error = True
 else:
     deepprep_cmd += f' {output_dir}'
 deepprep_cmd += f' participant'
@@ -82,7 +86,7 @@ task_id = st.text_input("Task ID (optional):", help="The task ID of BOLD data. (
 if task_id:
     deepprep_cmd += f' --task_id {task_id}'
 
-subject_id = st.text_input("Subject ID (optional):", help="Identify the subjects you'd like to process by their IDs. (i.e. '001 002')")
+subject_id = st.text_input("Subject ID (optional):", help="Identify the subjects you'd like to process by their IDs. (i.e. 'sub-001 sub-002 sub-003')")
 if subject_id:
     if 'sub-' in subject_id:
         subject_id = subject_id.replace('sub-', '')

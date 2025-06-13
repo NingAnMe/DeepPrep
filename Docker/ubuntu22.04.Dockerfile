@@ -133,6 +133,8 @@ RUN pip3 install streamlit==1.38.0 protobuf==3.20  && pip3 cache purge && rm -rf
 
 RUN pip3 install git+https://github.com/netneurolab/neuromaps.git@ae3c88a60746c0137dc81b15130a12a25946252b && pip3 cache purge && rm -rf /tmp/* /var/tmp/*
 
+RUN pip3 install pyvista==0.45.2 && pip3 cache purge && rm -rf /tmp/* /var/tmp/*
+
 # Start from this Docker image
 FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04
 
@@ -325,6 +327,7 @@ COPY deepprep/nextflow /opt/DeepPrep/deepprep/nextflow
 COPY deepprep/web /opt/DeepPrep/deepprep/web
 COPY deepprep/qc /opt/DeepPrep/deepprep/qc
 COPY deepprep/rest/denoise /opt/DeepPrep/deepprep/rest/denoise
+COPY deepprep/TargetAutoPlaning /opt/DeepPrep/deepprep/TargetAutoPlaning
 COPY deepprep/deepprep.sh /opt/DeepPrep/deepprep/deepprep.sh
 # release
 ENV DEEPPREP_VERSION="25.1.0"

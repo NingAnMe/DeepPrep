@@ -23,7 +23,7 @@ process anat_get_t1w_file_in_bids {
 
     input:  // https://www.nextflow.io/docs/latest/process.html#inputs
     val(bids_dir)
-    val(subjects)
+    val(participant_label)
     val(gpu_lock)
 
     output:
@@ -31,14 +31,14 @@ process anat_get_t1w_file_in_bids {
 
     script:
     script_py = "anat_get_t1w_file_in_bids.py"
-    if (subjects.toString() == '') {
+    if (participant_label.toString() == '') {
         """
         ${script_py} --bids-dir ${bids_dir}
         """
     }
     else {
         """
-        ${script_py} --bids-dir ${bids_dir} --subject-ids ${subjects}
+        ${script_py} --bids-dir ${bids_dir} --subject-ids ${participant_label}
         """
     }
 
@@ -343,16 +343,27 @@ process anat_T1 {
     input:
     val(subjects_dir)
     tuple(val(subject_id), val(nu_mgz))
+    val(app)
 
     output:
     tuple(val(subject_id), val("${t1_mgz}")) // emit: t1_mgz
 
     script:
+    orig_001_mgz = "${subjects_dir}/${subject_id}/mri/orig/001.mgz"
     t1_mgz = "${subjects_dir}/${subject_id}/mri/T1.mgz"
 
-    """
-    mri_normalize -seed 1234 -g 1 -mprage ${nu_mgz} ${t1_mgz}
-    """
+
+    if (app.toString().toUpperCase() == 'TRUE') {
+        """
+        recon-all -motioncor -talairach -nuintensitycor -normalization -i ${orig_001_mgz} -s ${subject_id} -sd ${subjects_dir}/${subject_id}/tmp
+        cp -f ${subjects_dir}/${subject_id}/tmp/${subject_id}/mri/T1.mgz ${t1_mgz}
+        """
+    }
+    else {
+        """
+        mri_normalize -seed 1234 -g 1 -mprage ${nu_mgz} ${t1_mgz}
+        """
+    }
 }
 
 
@@ -1488,7 +1499,7 @@ process bold_get_bold_file_in_bids {
     input:  // https://www.nextflow.io/docs/latest/process.html#inputs
     val(bids_dir)
     val(subjects_dir)
-    val(subjects)
+    val(participant_label)
     val(bold_task_type)
     val(bold_only)
     val(gpu_lock)
@@ -1498,7 +1509,7 @@ process bold_get_bold_file_in_bids {
 
     script:
     script_py = "bold_get_bold_file_in_bids.py"
-    if (subjects.toString() == '') {
+    if (participant_label.toString() == '') {
         """
         ${script_py} \
         --bids_dir ${bids_dir} \
@@ -1512,7 +1523,7 @@ process bold_get_bold_file_in_bids {
         ${script_py} \
         --bids_dir ${bids_dir} \
         --subjects_dir ${subjects_dir} \
-        --subject_ids ${subjects} \
+        --subject_ids ${participant_label} \
         --task_type ${bold_task_type} \
         --bold_only ${bold_only}
         """
@@ -2743,7 +2754,7 @@ workflow anat_wf {
     anat_talairach_and_nu_input = orig_mgz.join(orig_nu_mgz)
     (nu_mgz, talairach_auto_xfm, talairach_xfm, talairach_xfm_lta, talairach_with_skull_lta, talairach_lta) = anat_talairach_and_nu(subjects_dir, anat_talairach_and_nu_input, freesurfer_home)
 
-    t1_mgz = anat_T1(subjects_dir, nu_mgz)
+    t1_mgz = anat_T1(subjects_dir, nu_mgz, params.preprocess_others)
 
     anat_brainmask_input = nu_mgz.join(mask_mgz)
     (norm_mgz, brainmask_mgz) = anat_brainmask(subjects_dir, anat_brainmask_input)

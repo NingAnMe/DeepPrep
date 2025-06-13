@@ -79,7 +79,7 @@ if __name__ == '__main__':
                 print(results)
                 assert status == 0
     else:
-        cmd = f"python3 " + " ".join(sys.argv[4:])
+        cmd = f"export CUDA_VISIBLE_DEVICES='' && python3 " + " ".join(sys.argv[4:])
         print(f'INFO: GPU: {cmd}')
         status, results = subprocess.getstatusoutput(cmd)
         print(results)

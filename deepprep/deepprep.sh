@@ -17,7 +17,7 @@ python=""
 
 help="DeepPrep args:
 deepprep-docker [bids_dir] [output_dir] [{participant}] [--bold_task_type '[task1 task2 task3 ...]']
-                [--fs_license_file PATH] [--participant_label '[001 002 003 ...]']
+                [--fs_license_file PATH] [--participant_label '[sub-001 sub-002 sub-003 ...]']
                 [--subjects_dir PATH] [--skip_bids_validation]
                 [--anat_only] [--bold_only] [--bold_sdc] [--bold_confounds] [--bold_skip_frame 0]
                 [--bold_cifti] [--bold_surface_spaces '[None fsnative fsaverage fsaverage6 ...]']
