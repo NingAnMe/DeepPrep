@@ -129,12 +129,14 @@ def get_space_t1w_bold(subject_id, bids_preproc, bold_orig_file):
     boldref_t1w_info = info.copy()
     boldref_t1w_info['space'] = 'T1w'
     boldref_t1w_info['suffix'] = 'boldref'
+    boldref_t1w_info['extension'] = '.nii.gz'
     boldref_t1w_file = layout_preproc.get(**boldref_t1w_info)[0]
 
     bold_t1w_info = info.copy()
     bold_t1w_info['space'] = 'T1w'
     bold_t1w_info['desc'] = 'preproc'
     bold_t1w_info['suffix'] = 'bold'
+    bold_t1w_info['extension'] = '.nii.gz'
     bold_t1w_file = layout_preproc.get(**bold_t1w_info)[0]
 
     fd_t1w_info = info.copy()

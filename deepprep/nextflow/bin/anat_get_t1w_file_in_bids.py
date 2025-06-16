@@ -19,7 +19,7 @@ if __name__ == '__main__':
     layout = bids.BIDSLayout(args.bids_dir, derivatives=False)
     subject_dict = {}
     t1w_filess = []
-    for t1w_file in layout.get(return_type='filename', subject=subject_ids, suffix="T1w", extension='.nii.gz'):
+    for t1w_file in layout.get(return_type='filename', subject=subject_ids, suffix="T1w", extension=['.nii.gz', '.nii']):
         sub_info = layout.parse_file_entities(t1w_file)
         subject_id = f"sub-{sub_info['subject']}"
         subject_dict.setdefault(subject_id, []).append(t1w_file)
