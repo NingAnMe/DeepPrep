@@ -72,15 +72,17 @@ if __name__ == '__main__':
     for bold_orig_file in bold_orig_files:
         bold_orig_file_path = bold_orig_file.path
         extension = layout_bids.parse_file_entities(bold_orig_file_path)['extension']
-        space = re.search(r'space-([a-zA-Z0-9]+)', Path(bold_orig_file_path).name).group(1)
-        bold_id = bold_orig_file.filename.split(extension)[0]
-        with open(bold_id + '.json', 'w') as f:
-            data_json = {
-                'bold_file': bold_orig_file_path,
-                'bids_database_path': database_path,
-                'space': space
-            }
-            json.dump(data_json, f, indent=4)
+        space = re.search(r'space-([a-zA-Z0-9]+)', Path(bold_orig_file_path).name)
+        if space is not None:
+            space = space.group(1)
+            bold_id = bold_orig_file.filename.split(extension)[0]
+            with open(bold_id + '.json', 'w') as f:
+                data_json = {
+                    'bold_file': bold_orig_file_path,
+                    'bids_database_path': database_path,
+                    'space': space
+                }
+                json.dump(data_json, f, indent=4)
 
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
