@@ -26,9 +26,9 @@ if __name__ == '__main__':
     anat_subject_dict = {}
     bold_filess = []
     if args.task_type is not None:  # TODO delete extension=.nii.gz
-        bids_bolds = layout.get(return_type='filename', subject=bold_subject_ids, task=args.task_type, suffix='bold', extension='.nii.gz')
+        bids_bolds = layout.get(return_type='filename', subject=bold_subject_ids, task=args.task_type, suffix='bold', extension=['.nii.gz', '.nii'])
     else:
-        bids_bolds = layout.get(return_type='filename', subject=bold_subject_ids, suffix='bold', extension='.nii.gz')
+        bids_bolds = layout.get(return_type='filename', subject=bold_subject_ids, suffix='bold', extension=['.nii.gz', '.nii'])
     for bold_file in bids_bolds:
         sub_info = layout.parse_file_entities(bold_file)
         bold_subject_id = f"sub-{sub_info['subject']}"
@@ -36,7 +36,7 @@ if __name__ == '__main__':
         bold_subject_ids = list(bold_subject_dict.keys())
         bold_filess = list(bold_subject_dict.values())
     if args.bold_only == 'FALSE':
-        for t1w_file in layout.get(return_type='filename', subject=anat_subject_ids, suffix="T1w", extension='.nii.gz'):
+        for t1w_file in layout.get(return_type='filename', subject=anat_subject_ids, suffix="T1w", extension=['.nii.gz', '.nii']):
             sub_info = layout.parse_file_entities(t1w_file)
             anat_subject_id = f"sub-{sub_info['subject']}"
             anat_subject_dict.setdefault(anat_subject_id, []).append(t1w_file)
@@ -60,4 +60,3 @@ if __name__ == '__main__':
                 with open(f'{bold_id}', 'w') as f:
                     f.write(subject_id + '\n')
                     f.writelines(bold_file)
-

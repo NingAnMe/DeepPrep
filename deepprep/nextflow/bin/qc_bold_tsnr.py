@@ -99,10 +99,12 @@ def get_space_t1w_bold(subject_id, bids_preproc, bold_orig_file):
 
     bold_t1w_info = info.copy()
     bold_t1w_info['space'] = 'T1w'
+    bold_t1w_info['extension'] = '.nii.gz'
     bold_t1w_file = layout_preproc.get(**bold_t1w_info)[0]
 
     boldmask_t1w_info = info.copy()
     boldmask_t1w_info['suffix'] = 'mask'
+    boldmask_t1w_info['extension'] = '.nii.gz'
     boldmask_t1w_file = layout_preproc.get(**boldmask_t1w_info)[0]
 
     return bold_t1w_file, boldmask_t1w_file

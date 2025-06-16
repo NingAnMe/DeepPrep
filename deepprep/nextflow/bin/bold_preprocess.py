@@ -76,6 +76,7 @@ def get_bold_func_path(subject_id, bids_preproc, bold_orig_file):
     boldref_t1w_info = info.copy()
     boldref_t1w_info['space'] = 'T1w'
     boldref_t1w_info['suffix'] = 'boldref'
+    boldref_t1w_info['extension'] = '.nii.gz'
     boldref_t1w_file = layout_preproc.get(**boldref_t1w_info)[0]
 
     return Path(boldref_t1w_file).parent
