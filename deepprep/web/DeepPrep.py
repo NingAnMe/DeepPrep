@@ -30,16 +30,20 @@ st.markdown(
 """
 )
 
-st.page_link("pages/1_🚀Preprocessing of T1w & BOLD.py",
+st.page_link("pages/1_📝Quick QC.py",
+    label="👉Quick QC of T1w & BOLD🔗"
+)
+
+st.page_link("pages/2_🚀Preprocessing of T1w & BOLD.py",
     label="👉Preprocessing of T1w & BOLD🔗"
 )
 
-st.page_link("pages/2_⚙️Postprocessing of BOLD.py",
+st.page_link("pages/3_⚙️Postprocessing of BOLD.py",
     label="👉Postprocessing of BOLD🔗"
 )
 
-st.page_link("pages/3_📝Quick QC.py",
-    label="👉Quick QC of T1w & BOLD🔗"
+st.page_link("pages/4_🎯Target Auto Planing.py",
+    label="👉Postprocessing of BOLD🔗"
 )
 
 st.markdown(
