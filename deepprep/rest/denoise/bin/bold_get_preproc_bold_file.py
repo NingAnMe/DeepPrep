@@ -10,6 +10,8 @@ import shutil
 from bids import BIDSLayout
 import json
 import uuid
+import re
+from pathlib import Path
 
 
 if __name__ == '__main__':
@@ -43,6 +45,7 @@ if __name__ == '__main__':
 
     bids_dir = args.bids_dir
     subject_id = args.subject_id
+    subject_id = [subj.split('sub-')[-1] if subj.startswith('sub-') else subj for subj in subject_id]
     task_id = args.task_id
 
     if not os.path.exists(args.output_dir):
@@ -69,12 +72,13 @@ if __name__ == '__main__':
     for bold_orig_file in bold_orig_files:
         bold_orig_file_path = bold_orig_file.path
         extension = layout_bids.parse_file_entities(bold_orig_file_path)['extension']
-
+        space = re.search(r'space-([a-zA-Z0-9]+)', Path(bold_orig_file_path).name).group(1)
         bold_id = bold_orig_file.filename.split(extension)[0]
         with open(bold_id + '.json', 'w') as f:
             data_json = {
                 'bold_file': bold_orig_file_path,
-                'bids_database_path': database_path
+                'bids_database_path': database_path,
+                'space': space
             }
             json.dump(data_json, f, indent=4)
 

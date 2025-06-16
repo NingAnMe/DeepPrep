@@ -30,11 +30,11 @@ def set_environ(freesurfer_home, subjects_dir):
     os.environ['FSLOUTPUTTYPE'] = 'NIFTI_GZ'
 
 
-def fsaverage6_sm6(input_path, output_path, hemi, fwhm=6):
+def fsaverageN_smN(input_path, output_path, hemi, space, fwhm=6):
     cmd = ' '.join([
                     'mri_surf2surf',
                     '--hemi', hemi,
-                    '--s', 'fsaverage6',
+                    '--s', space,
                     '--sval', input_path,
                     '--label-src', hemi + '.cortex.label',
                     '--fwhm', str(fwhm),
@@ -103,6 +103,7 @@ if __name__ == '__main__':
         bold_preproc_json = json.load(f)
     bold_preproc_file = bold_preproc_json.get('bold_file', None)
     bids_database_path = bold_preproc_json.get('bids_database_path', None)
+    space = bold_preproc_json.get('space', None)
     assert os.path.isfile(bold_preproc_file)
 
     layout_pre = BIDSLayout(args.bold_preprocess_dir, validate=False)
@@ -172,7 +173,7 @@ if __name__ == '__main__':
 
         fwhm = int(args.surface_fwhm)
         if fwhm > 0:
-            fsaverage6_sm6(regression_file, smooth_file, hemi, fwhm)
+            fsaverageN_smN(regression_file, smooth_file, hemi, space, fwhm)
             assert os.path.exists(smooth_file)
             print(f'>>> {smooth_file}')
             with open(smooth_json_file, 'w') as f:
