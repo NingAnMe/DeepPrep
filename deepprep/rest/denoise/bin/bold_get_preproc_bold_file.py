@@ -45,7 +45,7 @@ if __name__ == '__main__':
 
     bids_dir = args.bids_dir
     subject_id = args.subject_id
-    subject_id = [subj.split('sub-')[-1] if subj.startswith('sub-') else subj for subj in subject_id]
+
     task_id = args.task_id
 
     if not os.path.exists(args.output_dir):
@@ -64,6 +64,7 @@ if __name__ == '__main__':
     if task_id:
         orig_entities['task'] = task_id
     if subject_id:
+        subject_id = [subj.split('sub-')[-1] if subj.startswith('sub-') else subj for subj in subject_id]
         orig_entities['subject'] = subject_id
     if args.space:
         orig_entities['space'] = args.space
