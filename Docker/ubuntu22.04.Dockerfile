@@ -327,7 +327,6 @@ COPY deepprep/nextflow /opt/DeepPrep/deepprep/nextflow
 COPY deepprep/web /opt/DeepPrep/deepprep/web
 COPY deepprep/qc /opt/DeepPrep/deepprep/qc
 COPY deepprep/rest/denoise /opt/DeepPrep/deepprep/rest/denoise
-COPY deepprep/TargetAutoPlaning /opt/DeepPrep/deepprep/TargetAutoPlaning
 COPY deepprep/deepprep.sh /opt/DeepPrep/deepprep/deepprep.sh
 # release
 ENV DEEPPREP_VERSION="25.1.0"
