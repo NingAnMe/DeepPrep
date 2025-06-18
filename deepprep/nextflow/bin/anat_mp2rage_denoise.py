@@ -63,7 +63,6 @@ if __name__ == '__main__':
         subject_ids = [subject_id[4:] if subject_id.startswith('sub-') else subject_id for subject_id in args.subject_ids]
     else:
         subject_ids = args.subject_ids
-    print(subject_ids)
     layout = bids.BIDSLayout(args.bids_dir, derivatives=False)
     subject_dict = {}
     for t1w_file in layout.get(return_type='filename', subject=subject_ids, suffix="T1w", extension=['.nii.gz', '.nii']):
