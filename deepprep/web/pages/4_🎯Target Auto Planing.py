@@ -66,8 +66,29 @@ if participant_label:
 else:
     participant_label_cmd = ""
 
-script_name = st.text_input("Target script name", value='SCAN_targets_auto_plan.py', help="-v /path/to/TargetAutoPlaning:/opt/DeepPrep/deepprep/TargetAutoPlaning")
+bold_skip_frame = st.text_input("skip n frames of BOLD data", value="4", help="skip n frames of BOLD fMRI; the default is `2`.")
+bold_bandpass = st.text_input("Bandpass filter", value="0.01-0.08", help="the default range is `0.01-0.08`.")
+bold_fwhm = st.text_input("fwhm", value="6", help="smooth by fwhm mm; the default is `6`.")
+confounds_file = st.text_input("Confounds File Path", value='/opt/DeepPrep/deepprep/rest/denoise/12motion_6param_10bCompCor.txt', help="The path to the text file that contains all the confound names needed for regression.")
+if not confounds_file.startswith('/'):
+    st.error("The path must be an absolute path that starts with '/'.")
+    commond_error = True
+elif not os.path.exists(confounds_file):
+    st.error("The Confounds File Path does not exist!")
+    commond_error = True
 
+target = st.radio("select a target: ", ("Post-stroke aphasia", "Post-stroke motor", "Post-stroke cognition", "PD-tremor", "custom"), horizontal=True, help="")
+
+if target == "Post-stroke aphasia":
+    script_name = st.text_input("Target script name", value='/opt/DeepPrep/deepprep/TargetAutoPlaning/Aphasia_auto_point.py', help="", disabled=True)
+elif target == "Post-stroke motor":
+    script_name = st.text_input("Target script name", value='/opt/DeepPrep/deepprep/TargetAutoPlaning/Motor_auto_point.py', help="", disabled=True)
+elif target == "Post-stroke cognition":
+    script_name = st.text_input("Target script name", value='/opt/DeepPrep/deepprep/TargetAutoPlaning/Cognition_auto_point.py', help="", disabled=True)
+elif target == "PD-tremor":
+    script_name = st.text_input("Target script name", value='/opt/DeepPrep/deepprep/TargetAutoPlaning/SCAN_VIM_auto_point.py', help="", disabled=True)
+elif target == "custom":
+    script_name = st.text_input("Target script name", placeholder='/absolute_path_to_custom_targets_python_script.py', help="-v /path/to/TargetAutoPlaning:/opt/DeepPrep/deepprep/TargetAutoPlaning", disabled=False)
 
 if device == "GPU":
     device_cmd = f' --device GPU'
@@ -87,23 +108,26 @@ def run_command(cmd):
 
     while True:
         output = process.stdout.readline()
-        print(output)
         if output == "" and process.poll() is not None:
             break
         if output:
             yield output + '\n'
 
+    stderr = process.stderr.read()
+    if stderr:
+        yield stderr + '\n'
+
     process.wait()
 
 # output
 preprocess_dir = os.path.join(output_dir, 'Preprocess')
-preprocess_cmd = f"{bids_dir} {preprocess_dir} participant {device_cmd} --fs_license_file {freesurfer_license_file} {participant_label_cmd} --bold_task_type 'rest' --bold_surface_spaces 'fsaverage6' --bold_volume_space None --bold_skip_frame 4 --bold_bandpass 0.01-0.08 --bold_confounds --skip_bids_validation --resume"
+preprocess_cmd = f"{bids_dir} {preprocess_dir} participant {device_cmd} --fs_license_file {freesurfer_license_file} {participant_label_cmd} --bold_task_type 'rest' --bold_surface_spaces 'fsaverage6' --bold_volume_space None --skip_frame {bold_skip_frame} --bandpass {bold_bandpass} --bold_confounds --skip_bids_validation --resume"
 
 # input
 preprocess_bold_dir = os.path.join(preprocess_dir, 'BOLD')
 # output
 postprocess_dir = os.path.join(output_dir, 'Postprocess')
-postprocess_cmd = f"{preprocess_bold_dir} {postprocess_dir} participant --fs_license_file {freesurfer_license_file} --task_id 'rest' --space 'fsaverage6' --confounds_index_file /opt/DeepPrep/deepprep/rest/denoise/12motion_6param_10bCompCor.txt --skip_frame 4 --surface_fwhm 6 --volume_fwhm 6 --bandpass 0.01-0.08 --skip_bids_validation --resume"
+postprocess_cmd = f"{preprocess_bold_dir} {postprocess_dir} participant --fs_license_file {freesurfer_license_file} --task_id 'rest' --space 'fsaverage6' --confounds_index_file {confounds_file}' --skip_frame {bold_skip_frame} --surface_fwhm {bold_fwhm} --volume_fwhm {bold_fwhm} --bandpass {bold_bandpass} --skip_bids_validation --resume"
 
 # input
 postprocess_bold_dir = os.path.join(postprocess_dir, 'BOLD')
@@ -112,19 +136,21 @@ preprocess_recon_dir = os.path.join(preprocess_dir, 'Recon')
 target_dir = os.path.join(output_dir, 'Target')
 target_cmd = f"--data_path {postprocess_bold_dir} --output_path {target_dir} --reconall_dir {preprocess_recon_dir} --FREESURFER_HOME /opt/freesurfer"
 
-with st.expander("------------ debug info ------------"):
-    st.write(preprocess_cmd)
-    st.write(postprocess_cmd)
-    st.write(target_cmd)
-
 # 新增：多选步骤
-steps_to_run = st.multiselect(
-    '请选择要运行的步骤',
-    ['preprocess', 'postprocess', 'target'],
-    default=['preprocess', 'postprocess', 'target'],
-    help='可多选，执行所选步骤')
+with st.expander("------------ custom steps ------------"):
+    steps_to_run = st.multiselect(
+        '请选择要运行的步骤',
+        ['preprocess', 'postprocess', 'target'],
+        default=['preprocess', 'postprocess', 'target'],
+        help='可多选，执行所选步骤')
 
-st.write(f'-----------  ------------')
+    if 'preprocess' in steps_to_run:
+        st.write(f"/opt/DeepPrep/deepprep/deepprep.sh {preprocess_cmd}")
+    if 'postprocess' in steps_to_run:
+        st.write(f"/opt/DeepPrep/deepprep/web/pages/postprocess.sh {postprocess_cmd}")
+    if 'target' in steps_to_run:
+        st.write(f"/opt/conda/envs/deepprep/bin/python {script_name} {target_cmd}")
+
 if st.button("Run", disabled=commond_error):
     with st.spinner('Waiting for the process to finish, please do not leave this page...'):
         if 'preprocess' in steps_to_run:
@@ -136,7 +162,7 @@ if st.button("Run", disabled=commond_error):
             with st.expander("------------ postprocessing log ------------"):
                 st.write_stream(run_command(postprocess_command))
         if 'target' in steps_to_run:
-            target_command = [f"/opt/conda/envs/deepprep/bin/python /opt/DeepPrep/deepprep/TargetAutoPlaning/{script_name} {target_cmd}"]
+            target_command = [f"/opt/conda/envs/deepprep/bin/python {script_name} {target_cmd}"]
             with st.expander("------------ target log ------------"):
                 st.write_stream(run_command(target_command))
         import time
