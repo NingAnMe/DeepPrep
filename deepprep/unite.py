@@ -269,9 +269,9 @@ def build_commands(args):
     """Build processing commands"""
     
     # Prepare directories
-    preprocess_dir = os.path.join(args.output_dir, 'derivatives', 'deepprep')
-    postprocess_dir = os.path.join(args.output_dir, 'derivatives', 'deepprep-postprocess')  
-    target_dir = os.path.join(args.output_dir, 'derivatives', 'deepprep-target')
+    preprocess_dir = os.path.join(args.output_dir, 'Preprocess')
+    postprocess_dir = os.path.join(args.output_dir, 'Postprocess')
+    target_dir = os.path.join(args.output_dir, 'Target')
     
     # Build command arguments
     common_args = []
