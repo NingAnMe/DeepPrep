@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Target QC Report</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f8f8;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #34495e;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .header .subtitle {
+            margin: 10px 0 0 0;
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .summary {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .summary h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: #34495e;
+            color: white;
+            padding: 20px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid #2c3e50;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .toc {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .toc h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding: 0;
+            columns: 3;
+            column-gap: 30px;
+        }
+        
+        .toc li {
+            margin: 8px 0;
+            break-inside: avoid;
+        }
+        
+        .toc a {
+            color: #2c3e50;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            font-weight: 500;
+        }
+        
+        .toc a:hover {
+            background-color: #ecf0f1;
+            color: #34495e;
+        }
+        
+        .subject-section {
+            background: white;
+            margin-bottom: 40px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .subject-section h2 {
+            background: #2c3e50;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #34495e;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 25px;
+        }
+        
+        .info-card {
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .info-card h3 {
+            background: #ecf0f1;
+            margin: 0;
+            padding: 15px;
+            color: #2c3e50;
+            border-bottom: 1px solid #bdc3c7;
+            font-weight: 600;
+        }
+        
+        .info-card table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .info-card td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .info-card td:first-child {
+            font-weight: bold;
+            background: #f8f9fa;
+            width: 40%;
+            color: #2c3e50;
+        }
+        
+        .warnings-section {
+            padding: 0 25px 25px;
+        }
+        
+        .warnings-section h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .warnings-text {
+            background: #f8f9fa;
+            border: 1px solid #bdc3c7;
+            color: #34495e;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin: 0;
+            font-style: italic;
+        }
+        
+        .images-section {
+            padding: 0 25px 25px;
+        }
+        
+        .images-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .images-section h4 {
+            color: #2c3e50;
+            margin: 25px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #bdc3c7;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+        
+        .images-section h5 {
+            margin: 0;
+            padding: 12px;
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 1px solid #bdc3c7;
+            font-size: 0.95em;
+            font-weight: 600;
+            background: #f8f9fa;
+        }
+        
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .image-item {
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            overflow: hidden;
+            background: white;
+        }
+        
+        .image-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .image-item img:hover {
+            transform: scale(1.02);
+        }
+        
+        .error {
+            color: #c0392b;
+            padding: 20px;
+            text-align: center;
+            margin: 0;
+            font-weight: 500;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+        }
+        
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90%;
+            object-fit: contain;
+        }
+        
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #bbb;
+        }
+        
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .toc ul {
+                columns: 1;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Target QC Quality Control Report</h1>
+        <p class="subtitle">Generated: {{generation_time}}</p>
+    </div>
+    
+    <div class="summary">
+        <h2>Summary Statistics</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{total_subjects}}</div>
+                <div class="stat-label">Total Subjects</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{avg_lh_score}}</div>
+                <div class="stat-label">Left Hemisphere Avg Score</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{avg_rh_score}}</div>
+                <div class="stat-label">Right Hemisphere Avg Score</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{warnings_count}}</div>
+                <div class="stat-label">Subjects with Warnings</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toc">
+        <h2>Subject Directory</h2>
+        {{toc_html}}
+    </div>
+    
+    <div class="subjects-container">
+        {{subjects_html}}
+    </div>
+    
+    <div id="imageModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+    
+    <script>
+        function showFullImage(img) {
+            var modal = document.getElementById("imageModal");
+            var modalImg = document.getElementById("modalImage");
+            modal.style.display = "block";
+            modalImg.src = img.src;
+        }
+        
+        function closeModal() {
+            var modal = document.getElementById("imageModal");
+            modal.style.display = "none";
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            var modal = document.getElementById("imageModal");
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+        
+        // Close modal with ESC key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html> 

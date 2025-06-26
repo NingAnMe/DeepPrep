@@ -230,9 +230,10 @@ if st.button("Run", disabled=commond_error):
                 run_command_with_display(postprocess_command, max_display_lines)
         if 'target' in steps_to_run:
             target_command = f"/opt/conda/envs/deepprep/bin/python {script_name} {target_cmd}"
-            target_command = f"/opt/conda/envs/deepprep/bin/python {script_name} {target_cmd}"
+            target_qc_command = f"/opt/conda/envs/deepprep/bin/python /opt/conda/envs/deepprep/target/target_qc_html.py --input_dir {target_dir} --output_dir {target_dir} --output_name Target_QC_Quality_Control_Report.html"
             with st.expander("------------ target log ------------"):
                 run_command_with_display(target_command, max_display_lines)
+                run_command_with_display(target_qc_command, max_display_lines)
         import time
         time.sleep(2)
     st.success("Done!")

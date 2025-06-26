@@ -347,7 +347,9 @@ def build_commands(args):
         commands['target'] = (
             f"/opt/conda/envs/deepprep/bin/python {target_script} "
             f"--data_path {postprocess_bold_dir} --output_path {target_dir} "
-            f"--reconall_dir {preprocess_recon_dir} --FREESURFER_HOME /opt/freesurfer"
+            f"--reconall_dir {preprocess_recon_dir} --FREESURFER_HOME /opt/freesurfer && "
+            f"/opt/conda/envs/deepprep/bin/python /opt/DeepPrep/deepprep/target/target_qc_html.py "
+            f"--input_dir {target_dir} --output_dir {target_dir}  --output_name Target_QC_Quality_Control_Report.html"
         )
     
     return commands

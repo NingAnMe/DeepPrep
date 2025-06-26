@@ -327,6 +327,7 @@ COPY deepprep/nextflow /opt/DeepPrep/deepprep/nextflow
 COPY deepprep/web /opt/DeepPrep/deepprep/web
 COPY deepprep/qc /opt/DeepPrep/deepprep/qc
 COPY deepprep/rest/denoise /opt/DeepPrep/deepprep/rest/denoise
+COPY deepprep/target /opt/DeepPrep/deepprep/target
 COPY deepprep/TargetAutoPlaning /opt/DeepPrep/deepprep/TargetAutoPlaning
 COPY deepprep/preprocess.sh /opt/DeepPrep/deepprep/preprocess.sh
 COPY deepprep/unite.py /opt/DeepPrep/deepprep/unite.py
