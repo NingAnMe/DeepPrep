@@ -1,8 +1,9 @@
+#! /usr/bin/env python3
 import os
 import argparse
-import bids
 import numpy as np
 import nibabel as nib
+from pathlib import Path
 
 
 def mp2rage_denoise(inv1_file, inv2_file, uni_file, out_file, reg):
@@ -53,27 +54,37 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description="DeepPrep: denoise mp2rage data"
     )
-    parser.add_argument("--bids-dir", help="directory of BIDS type: /mnt/ngshare2/BIDS/MSC", required=True)
-    parser.add_argument('--subject-ids', type=str, nargs='+', default=[], help='specified subject_id, space-separated list')
-    parser.add_argument('--save-dir', help='save directory of denoise mp2rage data')
-    parser.add_argument('--denoise-factor', type=int, default=5, help='factor to denoise mp2rage')
+    parser.add_argument("--subjects-dir", required=True)
+    parser.add_argument("--mp2ragefile-path", required=True)
+    parser.add_argument('--mp2rage-config', type=int, default=5, help='factor to denoise mp2rage')
     args = parser.parse_args()
 
-    if len(args.subject_ids) != 0:
-        subject_ids = [subject_id[4:] if subject_id.startswith('sub-') else subject_id for subject_id in args.subject_ids]
-    else:
-        subject_ids = args.subject_ids
-    layout = bids.BIDSLayout(args.bids_dir, derivatives=False)
-    subject_dict = {}
-    for t1w_file in layout.get(return_type='filename', subject=subject_ids, suffix="T1w", extension=['.nii.gz', '.nii']):
-        sub_info = layout.parse_file_entities(t1w_file)
-        subject_id = f"sub-{sub_info['subject']}"
-        subject_dict.setdefault(subject_id, []).append(t1w_file)
+    with open(args.mp2ragefile_path, 'r') as f:
+        data = f.readlines()
+    data = [i.strip() for i in data]
+    subject_id = data[0]
+    output_dir = Path(args.subjects_dir) / subject_id / "mri" / "denoise"
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-    for subj in subject_dict.keys():
-        for t1w_file in subject_dict[subj]:
-            inv1_file = t1w_file.replace("T1w", "INV1")
-            inv2_file = t1w_file.replace("T1w", "INV2")
-            if os.path.exists(inv1_file) and os.path.exists(inv2_file):
-                denoise_file = os.path.join(args.save_dir, os.path.basename(t1w_file).replace(".nii.gz", "_denoise.nii.gz"))
-                mp2rage_denoise(inv1_file, inv2_file, t1w_file, denoise_file, args.denoise_factor)
+    unit1_files = []
+    inv1_files = []
+    inv2_files = []
+    
+    for file in data[1:]:
+        file_name = os.path.basename(file)
+        if "UNIT1" in file_name:
+            unit1_files.append(file)
+        elif "inv-1" in file_name:
+            inv1_files.append(file)
+        elif "inv-2" in file_name:
+            inv2_files.append(file)
+    denoise_files = []
+    for i in range(len(unit1_files)):
+        denoise_file = output_dir / os.path.basename(unit1_files[i]).replace("UNIT1.", "dec-mp2rage_T1w.")
+        mp2rage_denoise(inv1_files[i], inv2_files[i], unit1_files[i], denoise_file, args.mp2rage_config)
+        denoise_files.append(denoise_files)
+    
+    with open(os.path.join(os.getcwd(), f'{subject_id}'), 'w') as f:
+        f.write(subject_id + '\n')
+        f.write('\n'.join(denoise_files))
+    
