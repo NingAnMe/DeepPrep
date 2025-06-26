@@ -15,7 +15,7 @@ Stage: build
 %runscript
     echo "Container was created $NOW. Version: 25.1.0"
     echo "Arguments received: $*"
-    exec /opt/DeepPrep/deepprep/deepprep.sh "$@"
+    exec /opt/DeepPrep/deepprep/preprocess.sh "$@"
 
 %test
     grep -q NAME=\"Ubuntu\" /etc/os-release

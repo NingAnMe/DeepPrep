@@ -119,6 +119,69 @@ def run_command(cmd):
 
     process.wait()
 
+def run_command_with_display(cmd, max_lines=50):
+    """
+    Run command and display latest output in a scrolling manner
+    max_lines: Maximum number of lines to display, default 50 lines
+    """
+    import time
+    
+    # Create an empty container for displaying output
+    output_container = st.empty()
+    output_lines = []
+    
+    process = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,  # Redirect stderr to stdout
+        text=True,
+        shell=True,
+        bufsize=1,
+        universal_newlines=True
+    )
+    
+    while True:
+        line = process.stdout.readline()
+        if line == "" and process.poll() is not None:
+            break
+        if line:
+            output_lines.append(line.rstrip())
+            
+            # Keep only the latest max_lines
+            if len(output_lines) > max_lines:
+                output_lines = output_lines[-max_lines:]
+            
+            # Update display content
+            display_text = '\n'.join(output_lines)
+            output_container.code(display_text, language='bash')
+            
+            # Brief delay to avoid excessive updates
+            time.sleep(0.1)
+    
+    # Final check for stderr
+    stderr = process.stderr
+    if stderr:
+        remaining_stderr = stderr.read()
+        if remaining_stderr:
+            output_lines.append(f"ERROR: {remaining_stderr}")
+            if len(output_lines) > max_lines:
+                output_lines = output_lines[-max_lines:]
+            display_text = '\n'.join(output_lines)
+            output_container.code(display_text, language='bash')
+    
+    process.wait()
+    
+    # If process returns non-zero code, display error message
+    if process.returncode != 0:
+        output_lines.append(f"Process exit code: {process.returncode}")
+        display_text = '\n'.join(output_lines)
+        output_container.code(display_text, language='bash')
+        st.error(f"Command execution failed, exit code: {process.returncode}")
+    else:
+        st.success("Command executed successfully!")
+    
+    return process.returncode == 0
+
 # output
 preprocess_dir = os.path.join(output_dir, 'Preprocess')
 preprocess_cmd = f"{bids_dir} {preprocess_dir} participant {device_cmd} --fs_license_file {freesurfer_license_file} {participant_label_cmd} --bold_task_type 'rest' --bold_surface_spaces 'fsaverage6' --bold_volume_space None --skip_frame {bold_skip_frame} --bandpass {bold_bandpass} --bold_confounds --skip_bids_validation --resume"
@@ -127,7 +190,7 @@ preprocess_cmd = f"{bids_dir} {preprocess_dir} participant {device_cmd} --fs_lic
 preprocess_bold_dir = os.path.join(preprocess_dir, 'BOLD')
 # output
 postprocess_dir = os.path.join(output_dir, 'Postprocess')
-postprocess_cmd = f"{preprocess_bold_dir} {postprocess_dir} participant --fs_license_file {freesurfer_license_file} --task_id 'rest' --space 'fsaverage6' --confounds_index_file {confounds_file}' --skip_frame {bold_skip_frame} --surface_fwhm {bold_fwhm} --volume_fwhm {bold_fwhm} --bandpass {bold_bandpass} --skip_bids_validation --resume"
+postprocess_cmd = f"{preprocess_bold_dir} {postprocess_dir} participant --fs_license_file {freesurfer_license_file} --task_id 'rest' --space 'fsaverage6' --confounds_index_file {confounds_file} --skip_frame {bold_skip_frame} --surface_fwhm {bold_fwhm} --volume_fwhm {bold_fwhm} --bandpass {bold_bandpass} --skip_bids_validation --resume"
 
 # input
 postprocess_bold_dir = os.path.join(postprocess_dir, 'BOLD')
@@ -136,16 +199,20 @@ preprocess_recon_dir = os.path.join(preprocess_dir, 'Recon')
 target_dir = os.path.join(output_dir, 'Target')
 target_cmd = f"--data_path {postprocess_bold_dir} --output_path {target_dir} --reconall_dir {preprocess_recon_dir} --FREESURFER_HOME /opt/freesurfer"
 
-# 新增：多选步骤
+# Added: Multi-select steps and output settings
 with st.expander("------------ custom steps ------------"):
     steps_to_run = st.multiselect(
-        '请选择要运行的步骤',
+        'Please select steps to run',
         ['preprocess', 'postprocess', 'target'],
         default=['preprocess', 'postprocess', 'target'],
-        help='可多选，执行所选步骤')
+        help='Multiple selection allowed, execute selected steps')
+    
+    # Output display settings
+    st.subheader("Output Display Settings")
+    max_display_lines = 200
 
     if 'preprocess' in steps_to_run:
-        st.write(f"/opt/DeepPrep/deepprep/deepprep.sh {preprocess_cmd}")
+        st.write(f"/opt/DeepPrep/deepprep/preprocess.sh {preprocess_cmd}")
     if 'postprocess' in steps_to_run:
         st.write(f"/opt/DeepPrep/deepprep/web/pages/postprocess.sh {postprocess_cmd}")
     if 'target' in steps_to_run:
@@ -154,17 +221,18 @@ with st.expander("------------ custom steps ------------"):
 if st.button("Run", disabled=commond_error):
     with st.spinner('Waiting for the process to finish, please do not leave this page...'):
         if 'preprocess' in steps_to_run:
-            preprocess_command = [f"/opt/DeepPrep/deepprep/deepprep.sh {preprocess_cmd}"]
+            preprocess_command = f"/opt/DeepPrep/deepprep/preprocess.sh {preprocess_cmd}"
             with st.expander("------------ preprocessing log ------------"):
-                st.write_stream(run_command(preprocess_command))
+                run_command_with_display(preprocess_command, max_display_lines)
         if 'postprocess' in steps_to_run:
-            postprocess_command = [f"/opt/DeepPrep/deepprep/web/pages/postprocess.sh {postprocess_cmd}"]
+            postprocess_command = f"/opt/DeepPrep/deepprep/web/pages/postprocess.sh {postprocess_cmd}"
             with st.expander("------------ postprocessing log ------------"):
-                st.write_stream(run_command(postprocess_command))
+                run_command_with_display(postprocess_command, max_display_lines)
         if 'target' in steps_to_run:
-            target_command = [f"/opt/conda/envs/deepprep/bin/python {script_name} {target_cmd}"]
+            target_command = f"/opt/conda/envs/deepprep/bin/python {script_name} {target_cmd}"
+            target_command = f"/opt/conda/envs/deepprep/bin/python {script_name} {target_cmd}"
             with st.expander("------------ target log ------------"):
-                st.write_stream(run_command(target_command))
+                run_command_with_display(target_command, max_display_lines)
         import time
         time.sleep(2)
     st.success("Done!")

@@ -29,7 +29,7 @@ deepprep-docker [bids_dir] [output_dir] [{participant}] [--bold_task_type '[task
 
 if [ $# -eq 0 ]; then
   tmp_dir=$(mktemp -d)
-  mkdir -p "${tmp_dir}" && cd "${tmp_dir}" && streamlit run ${deepprep_home}/deepprep/web/DeepPrep.py --browser.gatherUsageStats false
+  mkdir -p "${tmp_dir}" && cd "${tmp_dir}" && streamlit run ${deepprep_home}/deepprep/web/UNITE.py --browser.gatherUsageStats false
   exit 0
 fi
 

@@ -328,11 +328,12 @@ COPY deepprep/web /opt/DeepPrep/deepprep/web
 COPY deepprep/qc /opt/DeepPrep/deepprep/qc
 COPY deepprep/rest/denoise /opt/DeepPrep/deepprep/rest/denoise
 COPY deepprep/TargetAutoPlaning /opt/DeepPrep/deepprep/TargetAutoPlaning
-COPY deepprep/deepprep.sh /opt/DeepPrep/deepprep/deepprep.sh
+COPY deepprep/preprocess.sh /opt/DeepPrep/deepprep/preprocess.sh
+COPY deepprep/unite.py /opt/DeepPrep/deepprep/unite.py
 # release
 ENV DEEPPREP_VERSION="25.1.0"
 
-RUN chmod 755 /opt/DeepPrep/deepprep/deepprep.sh && chmod 755 /opt/DeepPrep/deepprep/nextflow/bin/*.py
+RUN chmod 755 /opt/DeepPrep/deepprep/*.sh && chmod 755 /opt/DeepPrep/deepprep/*.py && chmod 755 /opt/DeepPrep/deepprep/nextflow/bin/*.py
 RUN chmod 755 /opt/DeepPrep/deepprep/web/pages/*.sh && chmod 755 /opt/DeepPrep/deepprep/rest/denoise/bin/*.py
 
 RUN find $HOME -type d -exec chmod go=u {} + && \
@@ -341,4 +342,4 @@ RUN find $HOME -type d -exec chmod go=u {} + && \
 #RUN /opt/conda/envs/deepprep/bin/pip3 install streamlit==1.38.0 protobuf==3.20  && pip3 cache purge && rm -rf /tmp/* /var/tmp/*
 EXPOSE 8501
 ## CMD
-ENTRYPOINT ["/opt/DeepPrep/deepprep/deepprep.sh"]
+ENTRYPOINT ["/opt/DeepPrep/deepprep/unite.py"]

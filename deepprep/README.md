@@ -20,7 +20,7 @@ docker run -it --rm --gpus all --entrypoint /bin/bash \
 -v ${DEEPPREP_RUN_CONFIG}:/nextflow.docker.local.config \
 deepprep:${DEEPPREP_VERSION}
 
-/deepprep/deepprep.sh run /deepprep/nextflow/deepprep.nf \
+/deepprep/preprocess.sh run /deepprep/nextflow/deepprep.nf \
 -resume \
 -c /nextflow.docker.local.config --bids_dir /BIDS_DATASET \
 --subjects_dir /DEEPPREP_RESULT_DIR/Recon \
@@ -39,7 +39,7 @@ singularity exec -e --nv \
 -B ${DEEPPREP_RUN_CONFIG}:/nextflow.docker.local.config \
 -B ${DEEPPREP_HOME}:/deepprep \
 ${DEEPPREP_WORKDIR}/deepprep_${DEEPPREP_VERSION}.sif \
-/deepprep/deepprep.sh run /deepprep/nextflow/deepprep.nf \
+/deepprep/preprocess.sh run /deepprep/nextflow/deepprep.nf \
 -resume \
 -c /nextflow.docker.local.config --bids_dir /BIDS_DATASET \
 --subjects_dir /DEEPPREP_RESULT_DIR/Recon \
@@ -95,7 +95,7 @@ docker run -it --rm --gpus all --entrypoint /bin/bash \
 deepprep:${DEEPPREP_VERSION}
 
 ### run code
-/deepprep/deepprep.sh run /deepprep/nextflow/deepprep.nf \
+/deepprep/preprocess.sh run /deepprep/nextflow/deepprep.nf \
 -resume \
 -c /nextflow.docker.local.config --bids_dir /BIDS_DATASET \
 --subjects_dir /DEEPPREP_RESULT_DIR/Recon \
@@ -105,7 +105,7 @@ deepprep:${DEEPPREP_VERSION}
 -with-timeline /DEEPPREP_RESULT_DIR/QC/timeline.html \
 --bold_task_type rest --bold_only True
 
-/tmp/pycharm_project_640/deepprep/deepprep.sh run /tmp/pycharm_project_640/deepprep/nextflow/deepprep.nf \
+/tmp/pycharm_project_640/deepprep/preprocess.sh run /tmp/pycharm_project_640/deepprep/nextflow/deepprep.nf \
 -resume \
 -c /nextflow.docker.local.config --bids_dir /mnt/ngshare/temp/ds004498 \
 --subjects_dir /mnt/ngshare/temp/ds004498_DeepPrep/Recon \

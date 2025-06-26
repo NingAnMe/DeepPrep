@@ -241,7 +241,7 @@ Pass *absolute paths* to avoid any mistakes.
     export BIDS_PATH=${TEST_DIR}/<bids_path>
     export OUTPUT_PATH=${TEST_DIR}/<output_path>
 
-    ${TEST_DIR}/DeepPrep/deepprep/deepprep.sh \
+    ${TEST_DIR}/DeepPrep/deepprep/preprocess.sh \
     ${BIDS_PATH} \
     ${OUTPUT_PATH} \
     participant \
@@ -320,7 +320,7 @@ Shown as below:
     export BIDS_PATH=${TEST_DIR}/<bids_path>
     export OUTPUT_PATH=${TEST_DIR}/<output_path>
 
-    ${TEST_DIR}/DeepPrep/deepprep/deepprep.sh \
+    ${TEST_DIR}/DeepPrep/deepprep/preprocess.sh \
     ${BIDS_PATH} \
     ${OUTPUT_PATH} \
     participant \
@@ -351,7 +351,7 @@ SLURM
 .. code-block:: none
 
     export TEST_DIR=<test_dir>
-    ${TEST_DIR}/DeepPrep/deepprep/deepprep.sh \
+    ${TEST_DIR}/DeepPrep/deepprep/preprocess.sh \
     ${TEST_DIR}/test_sample \
     ${TEST_DIR}/test_sample_DeepPrep_cpu \
     participant \
@@ -401,7 +401,7 @@ SLURM
 .. code-block:: none
 
     export TEST_DIR=<test_dir>
-    ${TEST_DIR}/DeepPrep/deepprep/deepprep.sh \
+    ${TEST_DIR}/DeepPrep/deepprep/preprocess.sh \
     ${TEST_DIR}/test_sample \
     ${TEST_DIR}/test_sample_DeepPrep_gpu \
     participant \
@@ -468,7 +468,7 @@ PBS
 .. code-block:: none
 
     export TEST_DIR=<test_dir>
-    ${TEST_DIR}/DeepPrep/deepprep/deepprep.sh \
+    ${TEST_DIR}/DeepPrep/deepprep/preprocess.sh \
     ${TEST_DIR}/test_sample \
     ${TEST_DIR}/test_sample_DeepPrep_cpu \
     participant \
@@ -519,7 +519,7 @@ PBS
 .. code-block:: none
 
     export TEST_DIR=<test_dir>
-    ${TEST_DIR}/DeepPrep/deepprep/deepprep.sh \
+    ${TEST_DIR}/DeepPrep/deepprep/preprocess.sh \
     ${TEST_DIR}/test_sample \
     ${TEST_DIR}/test_sample_DeepPrep_gpu \
     participant \

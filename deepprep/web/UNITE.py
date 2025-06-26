@@ -10,23 +10,18 @@ docker run -it --rm --user $(id -u):$(id -g) --gpus all -p 8501:8501 -v /mnt:/mn
 import streamlit as st
 import streamlit.components.v1 as components
 
-st.write("# Welcome to DeepPrep! 👋")
+st.write("# Welcome to UNITE platform! 👋")
 
 st.markdown(
     """
-    **DeepPrep:** An accelerated, scalable, and robust pipeline for 
-    neuroimaging preprocessing empowered by deep learning.
-    
-DeepPrep is a preprocessing pipeline that can flexibly handle anatomical and functional MRI data end-to-end.
-It accommodates various sizes, from a single participant to **LARGE-scale datasets**, achieving a **10-fold acceleration** compared to the state-of-the-art pipeline.
-    
+    **UNITE:** Unified platform for Neuromodulation with Individualized Target Estimation based on functional circuit mapping.
 """
 )
 
 st.markdown(
     """
     -----------------
-    ### DeepPrep GUIs
+    ### UNITE platform GUIs
 """
 )
 
@@ -43,7 +38,7 @@ st.page_link("pages/3_⚙️Postprocessing of BOLD.py",
 )
 
 st.page_link("pages/4_🎯Target Auto Planing.py",
-    label="👉Postprocessing of BOLD🔗"
+    label="👉Target Auto Planing🔗"
 )
 
 st.markdown(
@@ -52,33 +47,6 @@ st.markdown(
 """
 )
 
-st.markdown(
-    """
-    #### Version
-
-    25.1.0 [What’s new](https://deepprep.readthedocs.io/en/25.1.0/changes.html#what-s-new)
-
-
-"""
-)
-
-st.markdown(
-    """
-    #### Interested in learning more?
-
-    - Check out [DeepPrep document](https://deepprep.readthedocs.io/en/latest/)
-    - Submit your question on our [issue page](https://github.com/pBFSLab/DeepPrep)
-
-"""
-)
-
-st.markdown(
-    """
-    #### Citation  
-    Ren, J.\*, An, N.\*, Lin, C., Zhang, Y., Sun, Z., Zhang, W., Li, S., Guo, N., Cui, W., Hu, Q. Wang, W., Wu, X., Wang, Y., Jiang, T., Satterthwaite T. D., Wang, D. and Liu, H. (2025). DeepPrep: an accelerated, scalable and robust pipeline for neuroimaging preprocessing empowered by deep learning. Nature Methods. https://doi.org/10.1038/s41592-025-02599-1
-    
-"""
-)
 
 st.markdown(
     """

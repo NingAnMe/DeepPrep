@@ -211,7 +211,7 @@ st.write(f'-----------  ------------')
 st.write(f'{docker_cmd} pbfslab/deepprep {deepprep_cmd}')
 if st.button("Run", disabled=commond_error):
     with st.spinner('Waiting for the process to finish, please do not leave this page...'):
-        command = [f"/opt/DeepPrep/deepprep/deepprep.sh {deepprep_cmd}"]
+        command = [f"/opt/DeepPrep/deepprep/preprocess.sh {deepprep_cmd}"]
         with st.expander("------------ running log ------------"):
             st.write_stream(run_command(command))
         import time
