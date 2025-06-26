@@ -82,8 +82,7 @@ if __name__ == '__main__':
     for i in range(len(unit1_files)):
         denoise_file = output_dir / os.path.basename(unit1_files[i]).replace("UNIT1.", "dec-mp2rage_T1w.")
         mp2rage_denoise(inv1_files[i], inv2_files[i], unit1_files[i], denoise_file, args.mp2rage_config)
-        denoise_files.append(denoise_files)
-    
+        denoise_files.append(str(denoise_file))
     with open(os.path.join(os.getcwd(), f'{subject_id}'), 'w') as f:
         f.write(subject_id + '\n')
         f.write('\n'.join(denoise_files))
