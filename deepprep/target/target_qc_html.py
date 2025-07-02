@@ -47,13 +47,13 @@ def image_to_base64(image_path):
 
 def determine_target_type(subject_data):
     """Determine target type: cortical (surface) or subcortical (volume)"""
-    # If vertex index exists, it's a cortical target
-    lh_is_cortical = ('lh_Indi_Target_index' in subject_data and 
-                     subject_data['lh_Indi_Target_index'] and 
-                     str(subject_data['lh_Indi_Target_index']).startswith('lh'))
-    rh_is_cortical = ('rh_Indi_Target_index' in subject_data and 
-                     subject_data['rh_Indi_Target_index'] and 
-                     str(subject_data['rh_Indi_Target_index']).startswith('rh'))
+    # If vertex index exists and is not null, it's a cortical target
+    lh_is_cortical = ('lh_Indi_Target_Indix' in subject_data and 
+                     subject_data['lh_Indi_Target_Indix'] is not None and 
+                     str(subject_data['lh_Indi_Target_Indix']).startswith('lh'))
+    rh_is_cortical = ('rh_Indi_Target_Indix' in subject_data and 
+                     subject_data['rh_Indi_Target_Indix'] is not None and 
+                     str(subject_data['rh_Indi_Target_Indix']).startswith('rh'))
     
     return lh_is_cortical, rh_is_cortical
 
@@ -80,32 +80,51 @@ def generate_target_info_html(subject_data, hemisphere, is_cortical):
         score_str = f"{score:.4f}"
     except (ValueError, TypeError):
         score_str = 'N/A'
-    
     if not is_cortical:
         # Subcortical target - only show volume information
+        vol_ras = subject_data.get(f'{prefix}_Indi_Target_volRAS', 'N/A')
+        t1w_voxel = subject_data.get(f'{prefix}_Indi_Target_Voxel_Coord_T1w_Space', 'N/A')
+        mni_coord = subject_data.get(f'{prefix}_Indi_Target_Voxel_Coord_MNI_Space', 'N/A')
+        
+        # 对于null值不显示
+        vol_ras = vol_ras if vol_ras is not None else 'N/A'
+        t1w_voxel = t1w_voxel if t1w_voxel is not None else 'N/A'
+        mni_coord = mni_coord if mni_coord is not None else 'N/A'
+        
         return f"""
         <div class="info-card">
-            <h3>{hemi_name} Target Information (Subcortical)</h3>
+            <h3>{hemi_name} Target Information</h3>
             <table>
-                <tr><td>Target Score:</td><td>{score_str}</td></tr>
-                <tr><td>Volume RAS Coordinates:</td><td>{subject_data.get(f'{prefix}_Indi_Target_volRAS', 'N/A')}</td></tr>
-                <tr><td>T1w Space Voxel Coordinates:</td><td>{subject_data.get(f'{prefix}_Indi_Target_Voxel_coord_T1w_space', 'N/A')}</td></tr>
-                <tr><td>MNI Space Coordinates:</td><td>{subject_data.get(f'{prefix}_Indi_Target_Voxel_coord_MNI_space', 'N/A')}</td></tr>
+                <tr><td>Volume RAS Coordinates:</td><td>{vol_ras}</td></tr>
+                <tr><td>T1w Space Voxel Coordinates:</td><td>{t1w_voxel}</td></tr>
+                <tr><td>MNI Space Coordinates:</td><td>{mni_coord}</td></tr>
             </table>
         </div>
         """
     else:
         # Cortical target - show surface and volume information
+        vertex_index = subject_data.get(f'{prefix}_Indi_Target_Indix', 'N/A')
+        surf_ras = subject_data.get(f'{prefix}_Indi_Target_surfRAS', 'N/A')
+        vol_ras = subject_data.get(f'{prefix}_Indi_Target_volRAS', 'N/A')
+        t1w_voxel = subject_data.get(f'{prefix}_Indi_Target_Voxel_Coord_T1w_Space', 'N/A')
+        mni_coord = subject_data.get(f'{prefix}_Indi_Target_Voxel_Coord_MNI_Space', 'N/A')
+        
+        # 对于null值不显示
+        vertex_index = vertex_index if vertex_index is not None else 'N/A'
+        surf_ras = surf_ras if surf_ras is not None else 'N/A'
+        vol_ras = vol_ras if vol_ras is not None else 'N/A'
+        t1w_voxel = t1w_voxel if t1w_voxel is not None else 'N/A'
+        mni_coord = mni_coord if mni_coord is not None else 'N/A'
+        
         return f"""
         <div class="info-card">
-            <h3>{hemi_name} Target Information (Cortical)</h3>
+            <h3>{hemi_name} Target Information</h3>
             <table>
-                <tr><td>Target Score:</td><td>{score_str}</td></tr>
-                <tr><td>Vertex Index:</td><td>{subject_data.get(f'{prefix}_Indi_Target_index', 'N/A')}</td></tr>
-                <tr><td>Surface RAS Coordinates:</td><td>{subject_data.get(f'{prefix}_Indi_Target_surfRAS', 'N/A')}</td></tr>
-                <tr><td>Volume RAS Coordinates:</td><td>{subject_data.get(f'{prefix}_Indi_Target_volRAS', 'N/A')}</td></tr>
-                <tr><td>T1w Space Voxel Coordinates:</td><td>{subject_data.get(f'{prefix}_Indi_Target_Voxel_coord_T1w_space', 'N/A')}</td></tr>
-                <tr><td>MNI Space Coordinates:</td><td>{subject_data.get(f'{prefix}_Indi_Target_Voxel_coord_MNI_space', 'N/A')}</td></tr>
+                <tr><td>Vertex Index:</td><td>{vertex_index}</td></tr>
+                <tr><td>Surface RAS Coordinates:</td><td>{surf_ras}</td></tr>
+                <tr><td>Volume RAS Coordinates:</td><td>{vol_ras}</td></tr>
+                <tr><td>T1w Space Voxel Coordinates:</td><td>{t1w_voxel}</td></tr>
+                <tr><td>MNI Space Coordinates:</td><td>{mni_coord}</td></tr>
             </table>
         </div>
         """
@@ -167,7 +186,9 @@ def generate_subject_html(subject_data, input_dir):
     ]
     
     for field, title in parc_fields:
-        if field in subject_data and subject_data[field]:
+        if (field in subject_data and 
+            subject_data[field] is not None and 
+            subject_data[field].strip()):  # 确保不是null或空字符串
             image_path = os.path.join(input_dir, subject_data[field])
             if os.path.exists(image_path):
                 parcellation_images.append((image_path, title))
@@ -192,22 +213,19 @@ def generate_subject_html(subject_data, input_dir):
     target_images = []
     
     # Check for Target_Figure
-    if 'Target_Figure' in subject_data and subject_data['Target_Figure']:
+    if ('Target_Figure' in subject_data and 
+        subject_data['Target_Figure'] is not None and 
+        subject_data['Target_Figure'].strip()):  # 确保不是null或空字符串
         target_path = os.path.join(input_dir, subject_data['Target_Figure'])
         if os.path.exists(target_path):
-            # Determine display type
-            bilateral = lh_exists and rh_exists
-            if any([lh_is_cortical, rh_is_cortical]):
-                display_type = "Surface Space" + (" (Bilateral)" if bilateral else " (Unilateral)")
-            else:
-                display_type = "Volume Space" + (" (Bilateral)" if bilateral else " (Unilateral)")
-            
-            target_images.append((target_path, f"Target Display - {display_type}"))
+            target_images.append((target_path, f"Target Display"))
     
     # Check for T1 fusion images
     fusion_fields = ['Target_T1_Figure', 'Fusion_T1_Figure', 'T1_Overlay_Figure']
     for field in fusion_fields:
-        if field in subject_data and subject_data[field]:
+        if (field in subject_data and 
+            subject_data[field] is not None and 
+            subject_data[field].strip()):  # 确保不是null或空字符串
             fusion_path = os.path.join(input_dir, subject_data[field])
             if os.path.exists(fusion_path):
                 target_images.append((fusion_path, "Target T1 Fusion"))
@@ -387,7 +405,7 @@ def main():
     # Read JSON file for each subject
     subjects_data = []
     for subject_dir in subject_dirs:
-        json_file = os.path.join(subject_dir, "TARGET_targets_auto.json")
+        json_file = os.path.join(subject_dir, "TARGET_info.json")
         if os.path.exists(json_file):
             subject_data = load_json_file(json_file)
             subjects_data.append(subject_data)

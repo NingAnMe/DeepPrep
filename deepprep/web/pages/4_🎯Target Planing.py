@@ -7,27 +7,28 @@ import streamlit as st
 import subprocess
 import os
 
-st.markdown(f'# 🎯Target Auto Planing')
+st.markdown(f'# 🎯Target Planing')
 st.markdown(
     """
-DeepPrep is a preprocessing pipeline that can flexibly handle anatomical and functional MRI data end-to-end.
-It accommodates various sizes, from a single participant to LARGE-scale datasets, achieving a 10-fold acceleration compared to the state-of-the-art pipeline.
-
-Both the anatomical and functional parts can be run separately. However, preprocessed Recon is a mandatory prerequisite for executing the functional process.
-
-The DeepPrep workflow takes the directory of the dataset to be processed as input, which is required to be in a valid BIDS format.
+The goal of Target Planing stage is to identify functional circuit-guided neuromodulation targets based on personalized functional parcellation and RSFC. 
+The platform supports fully automated planning of both cortical and subcortical targets, adaptable to different clinical requirements and neuromodulation techniques, such as TMS, FUS, and DBS. 
+We currently provide four built-in target planning algorithms, including three cortical TMS targets for post-stroke rehabilitation, targeting personalized language-, motor-, and cognitive impairment-related networks, and one subcortical FUS target for tremor relief in PD. 
+In addition, the platform is extendable to user-defined target planning algorithms, allowing flexibility for other functional network targets and diseases. 
+This  workflow takes the directory of the dataset to be processed as input, which is required to be in a valid BIDS format.
 
 -----------------
 """
 )
 
-device = st.radio("select a device: ", ("auto", "GPU", "CPU"), horizontal=True, help="Specifies the device. The default is auto, which automatically selects a device.")
+device = st.radio("select a device: ", ("auto", "GPU", "CPU"), horizontal=True,
+                  help="Specifies the device. The default is auto, which automatically selects a device.")
 
 st.write(f"Preprocess Target ", f"on the '{device}' device.")
 
 commond_error = False
 
-bids_dir = st.text_input("BIDS Path:", help="refers to the directory of the input dataset, which is required to be in BIDS format.")
+bids_dir = st.text_input("BIDS Path:",
+                         help="refers to the directory of the input dataset, which is required to be in BIDS format.")
 if not bids_dir:
     st.error("The BIDS Path must be input!")
     commond_error = True
@@ -49,7 +50,8 @@ elif output_dir == bids_dir:
     st.error("The Output Path must be different from the BIDS Path!")
     commond_error = True
 
-freesurfer_license_file = st.text_input("FreeSurfer license file path", value='/opt/freesurfer/license.txt', help="FreeSurfer license file path. It is highly recommended to replace the license.txt path with your own FreeSurfer license! You can get it for free from https://surfer.nmr.mgh.harvard.edu/registration.html")
+freesurfer_license_file = st.text_input("FreeSurfer license file path", value='/opt/freesurfer/license.txt',
+                                        help="FreeSurfer license file path. It is highly recommended to replace the license.txt path with your own FreeSurfer license! You can get it for free from https://surfer.nmr.mgh.harvard.edu/registration.html")
 if not freesurfer_license_file.startswith('/'):
     st.error("The path must be an absolute path starts with '/'.")
     commond_error = True
@@ -66,10 +68,13 @@ if participant_label:
 else:
     participant_label_cmd = ""
 
-bold_skip_frame = st.text_input("skip n frames of BOLD data", value="4", help="skip n frames of BOLD fMRI; the default is `2`.")
+bold_skip_frame = st.text_input("skip n frames of BOLD data", value="4",
+                                help="skip n frames of BOLD fMRI; the default is `2`.")
 bold_bandpass = st.text_input("Bandpass filter", value="0.01-0.08", help="the default range is `0.01-0.08`.")
 bold_fwhm = st.text_input("fwhm", value="6", help="smooth by fwhm mm; the default is `6`.")
-confounds_file = st.text_input("Confounds File Path", value='/opt/DeepPrep/deepprep/rest/denoise/12motion_6param_10bCompCor.txt', help="The path to the text file that contains all the confound names needed for regression.")
+confounds_file = st.text_input("Confounds File Path",
+                               value='/opt/DeepPrep/deepprep/rest/denoise/12motion_6param_10bCompCor.txt',
+                               help="The path to the text file that contains all the confound names needed for regression.")
 if not confounds_file.startswith('/'):
     st.error("The path must be an absolute path that starts with '/'.")
     commond_error = True
@@ -77,18 +82,30 @@ elif not os.path.exists(confounds_file):
     st.error("The Confounds File Path does not exist!")
     commond_error = True
 
-target = st.radio("select a target: ", ("Post-stroke aphasia", "Post-stroke motor", "Post-stroke cognition", "PD-tremor", "custom"), horizontal=True, help="")
+target = st.radio("select a target: ",
+                  ("Post-stroke aphasia", "Post-stroke motor", "Post-stroke cognition", "PD-tremor", "custom"),
+                  horizontal=True, help="")
 
 if target == "Post-stroke aphasia":
-    script_name = st.text_input("Target script name", value='/opt/DeepPrep/deepprep/TargetAutoPlaning/Aphasia_auto_point.py', help="", disabled=True)
+    script_name = st.text_input("Target script name",
+                                value='/opt/DeepPrep/deepprep/TargetAutoPlaning/Aphasia_auto_point.py', help="",
+                                disabled=True)
 elif target == "Post-stroke motor":
-    script_name = st.text_input("Target script name", value='/opt/DeepPrep/deepprep/TargetAutoPlaning/Motor_auto_point.py', help="", disabled=True)
+    script_name = st.text_input("Target script name",
+                                value='/opt/DeepPrep/deepprep/TargetAutoPlaning/Motor_auto_point.py', help="",
+                                disabled=True)
 elif target == "Post-stroke cognition":
-    script_name = st.text_input("Target script name", value='/opt/DeepPrep/deepprep/TargetAutoPlaning/Cognition_auto_point.py', help="", disabled=True)
+    script_name = st.text_input("Target script name",
+                                value='/opt/DeepPrep/deepprep/TargetAutoPlaning/Cognition_auto_point.py', help="",
+                                disabled=True)
 elif target == "PD-tremor":
-    script_name = st.text_input("Target script name", value='/opt/DeepPrep/deepprep/TargetAutoPlaning/SCAN_VIM_auto_point.py', help="", disabled=True)
+    script_name = st.text_input("Target script name",
+                                value='/opt/DeepPrep/deepprep/TargetAutoPlaning/SCAN_VIM_auto_point.py', help="",
+                                disabled=True)
 elif target == "custom":
-    script_name = st.text_input("Target script name", placeholder='/absolute_path_to_custom_targets_python_script.py', help="-v /path/to/TargetAutoPlaning:/opt/DeepPrep/deepprep/TargetAutoPlaning", disabled=False)
+    script_name = st.text_input("Target script name", placeholder='/absolute_path_to_custom_targets_python_script.py',
+                                help="-v /path/to/TargetAutoPlaning:/opt/DeepPrep/deepprep/TargetAutoPlaning",
+                                disabled=False)
 
 if device == "GPU":
     device_cmd = f' --device GPU'
@@ -206,7 +223,7 @@ with st.expander("------------ custom steps ------------"):
         ['preprocess', 'postprocess', 'target'],
         default=['preprocess', 'postprocess', 'target'],
         help='Multiple selection allowed, execute selected steps')
-    
+
     # Output display settings
     st.subheader("Output Display Settings")
     max_display_lines = 200

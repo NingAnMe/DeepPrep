@@ -4,7 +4,7 @@
 # @Author : Ning An        @Email : Ning An <ninganme0317@gmail.com>
 
 """
-docker run -it --rm --user $(id -u):$(id -g) --gpus all -p 8501:8501 -v /mnt:/mnt pbfslab/deepprep:24.1.x
+docker run -it --rm --user $(id -u):$(id -g) --gpus all -p 8501:8501 -v /mnt:/mnt pbfslab/unite:24.1.x
 """
 
 import streamlit as st
@@ -14,7 +14,7 @@ st.write("# Welcome to UNITE platform! 👋")
 
 st.markdown(
     """
-    **UNITE:** Unified platform for Neuromodulation with Individualized Target Estimation based on functional circuit mapping.
+    **UNITE:** Unified platform for Neuromodulation with Individualized Target Estimation.
 """
 )
 
@@ -26,19 +26,19 @@ st.markdown(
 )
 
 st.page_link("pages/1_📝Quick QC.py",
-    label="👉Quick QC of T1w & BOLD🔗"
+    label="👉Quick QC🔗"
 )
 
-st.page_link("pages/2_🚀Preprocessing of T1w & BOLD.py",
-    label="👉Preprocessing of T1w & BOLD🔗"
+st.page_link("pages/2_🚀DeepPrep Preprocessing.py",
+    label="👉DeepPrep Preprocessing🔗"
 )
 
 st.page_link("pages/3_⚙️Postprocessing of BOLD.py",
     label="👉Postprocessing of BOLD🔗"
 )
 
-st.page_link("pages/4_🎯Target Auto Planing.py",
-    label="👉Target Auto Planing🔗"
+st.page_link("pages/4_🎯Target Planing.py",
+    label="👉Target Planing🔗"
 )
 
 st.markdown(
