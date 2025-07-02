@@ -83,7 +83,7 @@ elif not os.path.exists(confounds_file):
     commond_error = True
 
 target = st.radio("select a target: ",
-                  ("Post-stroke aphasia", "Post-stroke motor", "Post-stroke cognition", "PD-tremor", "custom"),
+                  ("Post-stroke cognition", "Post-stroke aphasia", "Post-stroke motor", "PD-tremor", "custom"),
                   horizontal=True, help="")
 
 if target == "Post-stroke aphasia":
@@ -247,7 +247,7 @@ if st.button("Run", disabled=commond_error):
                 run_command_with_display(postprocess_command, max_display_lines)
         if 'target' in steps_to_run:
             target_command = f"/opt/conda/envs/deepprep/bin/python {script_name} {target_cmd}"
-            target_qc_command = f"/opt/conda/envs/deepprep/bin/python /opt/conda/envs/deepprep/target/target_qc_html.py --input_dir {target_dir} --output_dir {target_dir} --output_name Target_QC_Quality_Control_Report.html"
+            target_qc_command = f"/opt/conda/envs/deepprep/bin/python /opt/conda/envs/deepprep/target/target_qc_html.py --input_dir {target_dir} --output_dir {target_dir} --output_name Target_Planing_Report.html"
             with st.expander("------------ target log ------------"):
                 run_command_with_display(target_command, max_display_lines)
                 run_command_with_display(target_qc_command, max_display_lines)
