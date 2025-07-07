@@ -2872,6 +2872,14 @@ workflow anat_wf {
 
     qc_report = qc_anat_create_report(bids_dir, subjects_dir, qc_result_path, aparc_aseg_svg, reports_utils_path)
 
+    //  *exvivo* labels
+    balabels_lh = Channel.fromPath("${freesurfer_home}/subjects/fsaverage/label/*lh*exvivo*.label")
+    balabels_rh = Channel.fromPath("${freesurfer_home}/subjects/fsaverage/label/*rh*exvivo*.label")
+    anat_balabels_input_lh = sphere_reg_surf.join(white_surf, by: [0, 1]).join(subject_id_lh, by: [0, 1])
+    anat_balabels_input_rh = sphere_reg_surf.join(white_surf, by: [0, 1]).join(subject_id_rh, by: [0, 1])
+    balabel_lh = anat_balabels_lh(subjects_dir, anat_balabels_input_lh, balabels_lh)  // if for paper, comment out
+    balabel_rh = anat_balabels_rh(subjects_dir, anat_balabels_input_rh, balabels_rh)  // if for paper, comment out
+
     // APP
     if (params.preprocess_others.toString().toUpperCase() == 'TRUE') {
         println "INFO: anat preprocess others == TURE"
@@ -2888,14 +2896,6 @@ workflow anat_wf {
         rh_anat_aparc_a2009s2aseg_input = white_surf.join(pial_surf, by: [0, 1]).join(cortex_label, by: [0, 1]).join(aparc_a2009s_annot, by: [0, 1]).join(subject_id_rh, by: [0, 1]).map { tuple -> return tuple[0, 2, 3, 4, 5] }
         anat_aparc_a2009s2aseg_inputs = aseg_mgz.join(ribbon_mgz).join(lh_anat_aparc_a2009s2aseg_input).join(rh_anat_aparc_a2009s2aseg_input)
         aparc_a2009s_aseg_mgz = anat_aparc_a2009s2aseg(subjects_dir, anat_aparc_a2009s2aseg_inputs, fsthreads)  // if for paper, comment out
-
-        //  *exvivo* labels
-        balabels_lh = Channel.fromPath("${freesurfer_home}/subjects/fsaverage/label/*lh*exvivo*.label")
-        balabels_rh = Channel.fromPath("${freesurfer_home}/subjects/fsaverage/label/*rh*exvivo*.label")
-        anat_balabels_input_lh = sphere_reg_surf.join(white_surf, by: [0, 1]).join(subject_id_lh, by: [0, 1])
-        anat_balabels_input_rh = sphere_reg_surf.join(white_surf, by: [0, 1]).join(subject_id_rh, by: [0, 1])
-        balabel_lh = anat_balabels_lh(subjects_dir, anat_balabels_input_lh, balabels_lh)  // if for paper, comment out
-        balabel_rh = anat_balabels_rh(subjects_dir, anat_balabels_input_rh, balabels_rh)  // if for paper, comment out
 
         anat_ca_register_input = brainmask_mgz.join(talairach_lta).join(norm_mgz)
         talairach_m3z = anat_ca_register(subjects_dir, anat_ca_register_input, freesurfer_home)
