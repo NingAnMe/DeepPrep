@@ -214,7 +214,12 @@ postprocess_bold_dir = os.path.join(postprocess_dir, 'BOLD')
 preprocess_recon_dir = os.path.join(preprocess_dir, 'Recon')
 # output
 target_dir = os.path.join(output_dir, 'Target')
-target_cmd = f"--data_path {postprocess_bold_dir} --output_path {target_dir} --reconall_dir {preprocess_recon_dir} --FREESURFER_HOME /opt/freesurfer"
+if participant_label:
+    subject_list = ','.join(participant_label.split(' '))
+    subject_list = f"--subject_list {subject_list}"
+else:
+    subject_list = ""
+target_cmd = f"--data_path {postprocess_bold_dir} --output_path {target_dir} {subject_list} --reconall_dir {preprocess_recon_dir} --FREESURFER_HOME /opt/freesurfer"
 
 # Added: Multi-select steps and output settings
 with st.expander("------------ custom steps ------------"):

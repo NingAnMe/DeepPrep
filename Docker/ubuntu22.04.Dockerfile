@@ -331,6 +331,7 @@ COPY deepprep/target /opt/DeepPrep/deepprep/target
 COPY deepprep/TargetAutoPlaning /opt/DeepPrep/deepprep/TargetAutoPlaning
 COPY deepprep/preprocess.sh /opt/DeepPrep/deepprep/preprocess.sh
 COPY deepprep/unite.py /opt/DeepPrep/deepprep/unite.py
+COPY deepprep/target/mri_volcluster /opt/freesurfer/bin
 # release
 ENV DEEPPREP_VERSION="25.1.0"
 

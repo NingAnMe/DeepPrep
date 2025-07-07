@@ -188,8 +188,8 @@ def validate_inputs(args) -> bool:
     # Validate participant labels format
     if args.participant_label:
         for label in args.participant_label:
-            if label.startswith('sub-'):
-                print(f"Error: participant_label should not include 'sub-' prefix: {label}")
+            if not label.startswith('sub-'):
+                print(f"Error: participant_label should include 'sub-' prefix: {label}")
                 return False
     
     return True
@@ -343,13 +343,19 @@ def build_commands(args):
         target_script = get_target_script_path(args.target, args.custom_target_script)
         postprocess_bold_dir = os.path.join(postprocess_dir, 'BOLD')
         preprocess_recon_dir = os.path.join(preprocess_dir, 'Recon')
-        
+
+        if args.participant_label:
+            subject_list = ','.join(args.participant_label)
+            subject_list = f"--subject_list {subject_list}"
+        else:
+            subject_list = ""
+
         commands['target'] = (
             f"/opt/conda/envs/deepprep/bin/python {target_script} "
-            f"--data_path {postprocess_bold_dir} --output_path {target_dir} "
+            f"--data_path {postprocess_bold_dir} --output_path {target_dir} {subject_list} "
             f"--reconall_dir {preprocess_recon_dir} --FREESURFER_HOME /opt/freesurfer && "
             f"/opt/conda/envs/deepprep/bin/python /opt/DeepPrep/deepprep/target/target_qc_html.py "
-            f"--input_dir {target_dir} --output_dir {target_dir}  --output_name Target_QC_Quality_Control_Report.html"
+            f"--input_dir {target_dir} --output_dir {target_dir}  --output_name Target_QC_Quality_Control_Report.html "
         )
     
     return commands
