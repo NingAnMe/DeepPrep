@@ -201,13 +201,13 @@ def run_command_with_display(cmd, max_lines=50):
 
 # output
 preprocess_dir = os.path.join(output_dir, 'Preprocess')
-preprocess_cmd = f"{bids_dir} {preprocess_dir} participant {device_cmd} --fs_license_file {freesurfer_license_file} {participant_label_cmd} --bold_task_type 'rest' --bold_surface_spaces 'fsaverage6' --bold_volume_space None --skip_frame {bold_skip_frame} --bandpass {bold_bandpass} --bold_confounds --skip_bids_validation --resume"
+preprocess_cmd = f"{bids_dir} {preprocess_dir} participant {device_cmd} --fs_license_file {freesurfer_license_file} {participant_label_cmd} --bold_task_type 'rest' --bold_surface_spaces 'fsaverage6' --skip_frame {bold_skip_frame} --bandpass {bold_bandpass} --bold_confounds --skip_bids_validation --resume"
 
 # input
 preprocess_bold_dir = os.path.join(preprocess_dir, 'BOLD')
 # output
 postprocess_dir = os.path.join(output_dir, 'Postprocess')
-postprocess_cmd = f"{preprocess_bold_dir} {postprocess_dir} participant --fs_license_file {freesurfer_license_file} --task_id 'rest' --space 'fsaverage6' --confounds_index_file {confounds_file} --skip_frame {bold_skip_frame} --surface_fwhm {bold_fwhm} --volume_fwhm {bold_fwhm} --bandpass {bold_bandpass} --skip_bids_validation --resume"
+postprocess_cmd = f"{preprocess_bold_dir} {postprocess_dir} participant --fs_license_file {freesurfer_license_file} --task_id 'rest' --space 'fsaverage6 MNI152NLin6Asym' --confounds_index_file {confounds_file} --skip_frame {bold_skip_frame} --surface_fwhm {bold_fwhm} --volume_fwhm {bold_fwhm} --bandpass {bold_bandpass} --skip_bids_validation --resume"
 
 # input
 postprocess_bold_dir = os.path.join(postprocess_dir, 'BOLD')
@@ -252,7 +252,7 @@ if st.button("Run", disabled=commond_error):
                 run_command_with_display(postprocess_command, max_display_lines)
         if 'target' in steps_to_run:
             target_command = f"/opt/conda/envs/deepprep/bin/python {script_name} {target_cmd}"
-            target_qc_command = f"/opt/conda/envs/deepprep/bin/python /opt/conda/envs/deepprep/target/target_qc_html.py --input_dir {target_dir} --output_dir {target_dir} --output_name Target_Planing_Report.html"
+            target_qc_command = f"/opt/conda/envs/deepprep/bin/python /opt/DeepPrep/deepprep/target/target_qc_html.py --input_dir {target_dir} --output_dir {target_dir} --output_name Target_Planing_Report.html"
             with st.expander("------------ target log ------------"):
                 run_command_with_display(target_command, max_display_lines)
                 run_command_with_display(target_qc_command, max_display_lines)

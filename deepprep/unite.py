@@ -309,7 +309,6 @@ def build_commands(args):
     preprocess_args = [
         "--bold_task_type 'rest'",
         "--bold_surface_spaces 'fsaverage6'",
-        "--bold_volume_space None",
         f"--bold_skip_frame {args.bold_skip_frame}",
         f"--bandpass {args.bandpass}",
         "--bold_confounds"
@@ -323,7 +322,7 @@ def build_commands(args):
     # Postprocessing command  
     postprocess_args = [
         "--task_id 'rest'",
-        "--space 'fsaverage6'",
+        "--space 'fsaverage6 MNI152NLin6Asym'",
         f"--confounds_index_file {args.confounds_index_file}",
         f"--skip_frame {args.bold_skip_frame}",
         f"--surface_fwhm {args.fwhm}",
