@@ -239,14 +239,14 @@ def indi_Gordon17_with_SCAN_parc(wb_data, num_iter, conf_thr, output_path, subj_
                 if sum(lh_vertex_mask) == 0:
                     maxx = max(lh_last_parc_conf)
                     lh_vertex_mask = lh_last_parc_conf == maxx
-                    print(f'Threshold TOOOOOO LARGE for lh.network{net_j+1}')
+                    print(f'HAAAAHAAAHAAA--Threshold TOOOOOO LARGE for lh.network{net_j+1}')
                 
                 rh_last_parc_conf = nib.load(os.path.join(output_path, f'Iter_{iter_i}/rh.NetworkConfidence_{net_j+1}.mgh')).get_fdata().reshape(-1, order='F')
                 rh_vertex_mask = rh_last_parc_conf >= conf_thr
                 if sum(rh_vertex_mask) == 0:
                     maxx = max(rh_last_parc_conf)
                     rh_vertex_mask = rh_last_parc_conf == maxx
-                    print(f'Threshold TOOOOOO LARGE for rh.network{net_j+1}')
+                    print(f'HAAAAHAAAHAAA--Threshold TOOOOOO LARGE for rh.network{net_j+1}')
                 
                 wb_mask = np.hstack([lh_vertex_mask, rh_vertex_mask])
                 parc_residual[net_j, :] = np.dot(snr_weight[wb_mask], wb_data[wb_mask, :])
@@ -363,14 +363,14 @@ def indi_APP_18_parc(wb_data, num_iter, conf_thr, output_path, subj_id, weight_g
                 if sum(lh_vertex_mask) == 0:
                     maxx = max(lh_last_parc_conf)
                     lh_vertex_mask = lh_last_parc_conf == maxx
-                    print(f'Threshold TOOOOOO LARGE for lh.network{net_j+1}')
+                    print(f'HAAAAHAAAHAAA--Threshold TOOOOOO LARGE for lh.network{net_j+1}')
                 
                 rh_last_parc_conf = nib.load(os.path.join(output_path, f'Iter_{iter_i}/rh.NetworkConfidence_{net_j+1}.mgh')).get_fdata().reshape(-1, order='F')
                 rh_vertex_mask = rh_last_parc_conf >= conf_thr
                 if sum(rh_vertex_mask) == 0:
                     maxx = max(rh_last_parc_conf)
                     rh_vertex_mask = rh_last_parc_conf == maxx
-                    print(f'Threshold TOOOOOO LARGE for rh.network{net_j+1}')
+                    print(f'HAAAAHAAAHAAA--Threshold TOOOOOO LARGE for rh.network{net_j+1}')
                 
                 wb_mask = np.hstack([lh_vertex_mask, rh_vertex_mask])
                 parc_residual[net_j, :] = np.dot(snr_weight[wb_mask], wb_data[wb_mask, :])

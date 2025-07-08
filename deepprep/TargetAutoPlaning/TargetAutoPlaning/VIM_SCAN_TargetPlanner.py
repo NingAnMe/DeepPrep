@@ -620,6 +620,12 @@ class VIM_SCAN_TargetPlanner(Planner):
         lh_indi_target_voxel_coord_T1w_space = np.array(np.unravel_index(np.argmax(lh_target_T1_nii), lh_target_T1_nii.shape), dtype=float)
         rh_indi_target_voxel_coord_T1w_space = np.array(np.unravel_index(np.argmax(rh_target_T1_nii), rh_target_T1_nii.shape), dtype=float)
 
+        ## copy the target file to the subject's directory
+        lh_target_T1_nii_path = os.path.join(self.workdir, 'lh_target_T1.nii.gz')
+        rh_target_T1_nii_path = os.path.join(self.workdir, 'rh_target_T1.nii.gz')
+        shutil.copyfile(lh_target_T1_nii_path, os.path.join(self.workdir, f'../{subject}_T1target_lh.nii.gz'))
+        shutil.copyfile(rh_target_T1_nii_path, os.path.join(self.workdir, f'../{subject}_T1target_rh.nii.gz'))
+
         ## read in the Indi Volume template
         Indi_Volume = os.path.join(os.environ.get("SUBJECTS_DIR"), subject, 'mri', 'T1.mgz')
         Indi_Volume_img = nib.load(Indi_Volume)

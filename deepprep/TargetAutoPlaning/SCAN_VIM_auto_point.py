@@ -155,9 +155,9 @@ def SCAN_target_auto_planing_batch(data_path, output_path, reconall_dir, subject
                 print(f'    lh SCAN: {planner.lh_targets}')
                 print(f'    rh SCAN: {planner.rh_targets}')
                 ## 保存结果，只保留第一个靶点
-                target_temp = {'subject': subject, 'run': run, 'lh_SCAN': planner.lh_targets[0]['index'], 'rh_SCAN': planner.rh_targets[0]['index'], 'warning': merge_messages(planner.warning_info)}
-                # # print(target_temp)
-                # target_records = pd.concat([target_records, pd.DataFrame(target_temp, index=[0])], ignore_index=True)
+                target_temp = {'subject': subject, 'run': run, 'lh_SCAN': [planner.lh_targets[0]['index']], 'rh_SCAN': [planner.rh_targets[0]['index']], 'warning': merge_messages(planner.warning_info)}
+                # print(target_temp)
+                target_records = pd.concat([target_records, pd.DataFrame(target_temp, index=[0])], ignore_index=True)
                 # score_temp = {'subject': subject, 'run': run, 'lh_SCAN': planner.lh_targets[0]['score'], 'rh_SCAN': planner.rh_targets[0]['score']}
                 # scores_records = pd.concat([scores_records, pd.DataFrame(score_temp, index=[0])], ignore_index=True)
             else:
@@ -249,9 +249,9 @@ def SCAN_target_auto_planing_batch(data_path, output_path, reconall_dir, subject
                     print(f'    lh SCAN: {planner.lh_targets}')
                     print(f'    rh SCAN: {planner.rh_targets}')
                     ## 保存结果，只保留第一个靶点
-                    target_temp = {'subject': subject, 'run': run, 'lh_SCAN': planner.lh_targets[0]['index'], 'rh_SCAN': planner.rh_targets[0]['index'], 'warning': merge_messages(planner.warning_info)}
-                    # # print(target_temp)
-                    # target_records = pd.concat([target_records, pd.DataFrame(target_temp, index=[0])], ignore_index=True)
+                    target_temp = {'subject': subject, 'run': run, 'lh_SCAN': [planner.lh_targets[0]['index']], 'rh_SCAN': [planner.rh_targets[0]['index']], 'warning': merge_messages(planner.warning_info)}
+                    # print(target_temp)
+                    target_records = pd.concat([target_records, pd.DataFrame(target_temp, index=[0])], ignore_index=True)
                     # score_temp = {'subject': subject, 'run': run, 'lh_SCAN': planner.lh_targets[0]['score'], 'rh_SCAN': planner.rh_targets[0]['score']}
                     # scores_records = pd.concat([scores_records, pd.DataFrame(score_temp, index=[0])], ignore_index=True)
                 else:
@@ -288,8 +288,8 @@ def SCAN_target_auto_planing_batch(data_path, output_path, reconall_dir, subject
         # break # for test
     ## 保存结果
     target_records.to_csv(os.path.join(output_path, 'SCAN_targets_auto.csv'), index=False)
-    scores_records.to_csv(os.path.join(output_path, 'SCAN_scores_auto.csv'), index=False)
-    group_records.to_csv(os.path.join(output_path, 'SCAN_group_auto.csv'), index=False)
+    # scores_records.to_csv(os.path.join(output_path, 'SCAN_scores_auto.csv'), index=False)
+    # group_records.to_csv(os.path.join(output_path, 'SCAN_group_auto.csv'), index=False)
             
 if __name__ == '__main__':
     args = parse_arguments()

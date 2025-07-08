@@ -201,6 +201,14 @@ def Aphasia_target_auto_planing_batch(data_path, output_path, reconall_dir, subj
                 json.dump(json_data, f, indent=2)
         
         else:
+            ## 从run_list 中排除anat和figures目录
+            run_list = [run for run in run_list if os.path.isdir(os.path.join(data_path, subject, run)) and 'anat' not in run and 'figures' not in run]
+            ## 只保留第一个run
+            if len(run_list) == 0:
+                print(f'{subject} does not have any valid runs.')
+                continue
+            run_list = [run_list[0]]  # 只处理第一个run
+
             for run in run_list:
                 if 'anat' in run or 'figures' in run:
                     continue
@@ -290,7 +298,7 @@ def Aphasia_target_auto_planing_batch(data_path, output_path, reconall_dir, subj
         # break # for test
     ## 保存结果
     target_records.to_csv(os.path.join(output_path, 'TARGET_targets_auto.csv'), index=False)
-    scores_records.to_csv(os.path.join(output_path, 'TARGET_scores_auto.csv'), index=False)
+    # scores_records.to_csv(os.path.join(output_path, 'TARGET_scores_auto.csv'), index=False)
     # group_records.to_csv(os.path.join(output_path, 'TARGET_group_auto.csv'), index=False)
             
 if __name__ == '__main__':

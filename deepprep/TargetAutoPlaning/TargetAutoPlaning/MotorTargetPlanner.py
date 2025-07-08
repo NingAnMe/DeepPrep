@@ -583,8 +583,8 @@ class MotorTargetPlanner(Planner):
         cmd = f'mri_convert {T1_path} {T1_nii_path} > /dev/null'
         os.system(cmd)
 
-        add_target_roi_mask_T1(T1_nii_path, lh_indi_target_voxel_coord_T1w_space, os.path.join(self.workdir, 'lh_T1target.nii.gz'))
-        add_target_roi_mask_T1(T1_nii_path, rh_indi_target_voxel_coord_T1w_space, os.path.join(self.workdir, 'rh_T1target.nii.gz'))
+        add_target_roi_mask_T1(T1_nii_path, lh_indi_target_voxel_coord_T1w_space, os.path.join(self.workdir, f'../{subject}_T1target_lh.nii.gz'))
+        add_target_roi_mask_T1(T1_nii_path, rh_indi_target_voxel_coord_T1w_space, os.path.join(self.workdir, f'../{subject}_T1target_rh.nii.gz'))
 
         ## MNI information
         lh_fs6_target_file = os.path.join(self.workdir, 'lh_fs6_dorsal_target0.mgh')

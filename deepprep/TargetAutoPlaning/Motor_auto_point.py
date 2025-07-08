@@ -199,6 +199,13 @@ def Aphasia_target_auto_planing_batch(data_path, output_path, reconall_dir, subj
             with open(out_json, 'w') as f:
                 json.dump(json_data, f, indent=2)
         else:
+            ## 从run_list 中排除anat和figures目录
+            run_list = [run for run in run_list if os.path.isdir(os.path.join(data_path, subject, run)) and 'anat' not in run and 'figures' not in run]
+            ## 只保留第一个run
+            if len(run_list) == 0:
+                print(f'{subject} does not have any valid runs.')
+                continue
+            run_list = [run_list[0]]  # 只处理第一个run
             for run in run_list:
                 if 'anat' in run or 'figures' in run:
                     continue
@@ -288,7 +295,7 @@ def Aphasia_target_auto_planing_batch(data_path, output_path, reconall_dir, subj
             # break # for test
     ## 保存结果
     target_records.to_csv(os.path.join(output_path, 'TARGET_targets_auto.csv'), index=False)
-    scores_records.to_csv(os.path.join(output_path, 'TARGET_scores_auto.csv'), index=False)
+    # scores_records.to_csv(os.path.join(output_path, 'TARGET_scores_auto.csv'), index=False)
     # group_records.to_csv(os.path.join(output_path, 'TARGET_group_auto.csv'), index=False)
             
 if __name__ == '__main__':
@@ -303,55 +310,3 @@ if __name__ == '__main__':
     set_environ(args.reconall_dir, args.FREESURFER_HOME)
 
     Aphasia_target_auto_planing_batch(args.data_path, args.output_path, args.reconall_dir, args.subject_list, args.sulc_percentile, args.FREESURFER_HOME)
-
-
-def test():
-    data_path = Path('/home/weiwei/workdata/TargetAutoPlaning/aphasia/BA')
-    auto_version = 'V014'
-    meta_data = pd.read_csv(data_path / 'manual_target.csv')
-    subjs = meta_data['subject'].tolist()
-
-    set_environ()
-    data_list = list()
-    for idx, subj in enumerate(subjs):
-        data_dict = dict()
-        data_dict['subject'] = subj
-        print(f'{idx}/{len(subjs)}: {subj}')
-        runs = os.listdir(data_path / 'pre' / subj)
-        run = runs[0]
-        if len(runs) > 1:
-            print(f'{subj} has {len(runs)} runs, {run} selected')
-        # Recon
-        recon_all_file = data_path / 'pre' / subj / run / 'Recon' / f'{subj}_reconall.zip'
-        if not os.path.exists(recon_all_file):
-            recon_all_file2 = glob.glob(str(data_path / 'pre' / subj / run / 'Recon' / '*.zip'))[0]
-            os.link(recon_all_file2, recon_all_file)
-
-        recon_all_path = Path(os.environ['SUBJECTS_DIR']) / subj
-        if not os.path.exists(recon_all_path):
-            with zipfile.ZipFile(recon_all_file) as zf:
-                zf.extractall(recon_all_path)
-
-        workdir = data_path / 'AutoPlaning' / auto_version / subj
-        logdir = data_path / 'AutoPlaning' / auto_version / subj / 'log'
-        planner = MotorTargetPlanner(verbose=True, workdir=workdir, logdir=logdir)
-        app_data_path = data_path / 'pre' / subj / run
-        planner.plan(app_data_path, subj)
-        lh_dorsal_targets = planner.lh_dorsal_targets
-        for idx, target in enumerate(lh_dorsal_targets):
-            target_index = target['index']
-            target_score = target['score']
-            data_dict[f'lh_dorsal_target{idx}_idx'] = target_index
-            data_dict[f'lh_dorsal_target{idx}_score'] = target_score
-        rh_dorsal_targets = planner.rh_dorsal_targets
-        for idx, target in enumerate(rh_dorsal_targets):
-            target_index = target['index']
-            target_score = target['score']
-            data_dict[f'rh_dorsal_target{idx}_idx'] = target_index
-            data_dict[f'rh_dorsal_target{idx}_score'] = target_score
-        data_list.append(data_dict)
-        df_tmp = pd.DataFrame(data_list)
-        df_tmp.to_csv(f'tmp_PSA_target_{auto_version}.csv', index=False)
-
-    df = pd.DataFrame(data_list)
-    df.to_csv(data_path / 'AutoPlaning' / f'APH_target_{auto_version}.csv', index=False)
